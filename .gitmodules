@@ -1,3 +1,6 @@
 [submodule "components/CMF"]
 	path = components/CMF
 	url = https://github.com/CircuitMess/CMF
+[submodule "components/Nevera-Common"]
+	path = components/Nevera-Common
+	url = git@github.com:CircuitMess/Nevera-Common.git
