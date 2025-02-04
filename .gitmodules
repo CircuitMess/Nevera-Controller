@@ -1,0 +1,3 @@
+[submodule "components/CMF"]
+	path = components/CMF
+	url = https://github.com/CircuitMess/CMF

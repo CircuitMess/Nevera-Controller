@@ -1,0 +1,14 @@
+.idea
+
+cmake-build-debug
+build
+
+sdkconfig*
+
+spiffs.bin
+
+venv
+
+managed_components/*
+
+dependencies.lock
