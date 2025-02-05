@@ -1,0 +1,76 @@
+#ifndef NEVERA_HARDWARECONFIGURATION_H
+#define NEVERA_HARDWARECONFIGURATION_H
+
+#include <Misc/Singleton.h>
+#include "Pins.hpp"
+
+class HardwareConfiguration : public Singleton {
+    GENERATED_BODY(HardwareConfiguration, Singleton)
+
+public:
+	const std::vector<GPIOPinDef>& getGPIOInputs() const noexcept { return GPIOInputs; }
+	uint8_t getAW9523Address() const noexcept { return AW9523Address; }
+	const std::vector<OutputPinDef>& getAW9523Outputs() const noexcept { return AW9523Outputs; }
+	const lgfx::Bus_SPI::config_t& getDisplayBusConfig() const noexcept { return DisplayBusConfig; }
+	const lgfx::Panel_Device::config_t& getDisplayPanelConfig() const noexcept { return DisplayPanelConfig; }
+
+private:
+    const std::vector<GPIOPinDef> GPIOInputs = {
+		{ { BTN_UP, true }, PullMode::Up },
+		{ { BTN_DOWN, true }, PullMode::Up },
+		{ { BTN_LEFT, true }, PullMode::Up },
+		{ { BTN_RIGHT, true }, PullMode::Up },
+		{ { BTN_FWD, true }, PullMode::Up },
+		{ { BTN_BCK, true }, PullMode::Up },
+		{ { BTN_MENU, true }, PullMode::Up }
+	};
+
+	const uint8_t AW9523Address = 0x5b;
+
+	const std::vector<OutputPinDef> AW9523Outputs = {
+		{ 0, true },
+		{ 1, true },
+		{ 2, true },
+		{ 8, false },
+		{ 9, false },
+		{ 10, false },
+		{ 11, true },
+		{ 13, false },
+		{ 14, true },
+		{ 15, true },
+	};
+
+	const lgfx::Bus_SPI::config_t DisplayBusConfig = {
+		.freq_write = 40000000,
+		.freq_read = 40000000,
+		.pin_sclk = TFT_SCK,
+		.pin_miso = -1,
+		.pin_mosi = TFT_SDA,
+		.pin_dc = TFT_DC,
+		.spi_mode = 0,
+		.spi_3wire = false,
+		.use_lock = false,
+		.dma_channel = LGFX_ESP32_SPI_DMA_CH,
+		.spi_host = SPI2_HOST
+	};
+
+	const lgfx::Panel_Device::config_t DisplayPanelConfig = {
+		.pin_cs = -1,
+		.pin_rst = TFT_RST,
+		.pin_busy = -1,
+		.memory_width = 132,
+		.memory_height = 132,
+		.panel_width = 128,
+		.panel_height = 128,
+		.offset_x = 2,
+		.offset_y = 1,
+		.offset_rotation = 3,
+		.readable = false,
+		.invert = false,
+		.rgb_order = false,
+		.dlen_16bit = false,
+		.bus_shared = false
+	};
+};
+
+#endif //NEVERA_HARDWARECONFIGURATION_H

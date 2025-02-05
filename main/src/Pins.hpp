@@ -1,24 +1,24 @@
 #ifndef NEVERA_CONTROLLER_PINS_HPP
 #define NEVERA_CONTROLLER_PINS_HPP
 
-#define I2C_SDA GPIO_NUM_12
-#define I2C_SCL GPIO_NUM_13
+#define I2C_SDA 12
+#define I2C_SCL 13
 
-#define LED_POWER GPIO_NUM_14
+#define LED_POWER 14
 
-#define PIN_BATT GPIO_NUM_10
+#define PIN_BATT 10
 
-#define TFT_SCK GPIO_NUM_47
-#define TFT_SDA GPIO_NUM_33
-#define TFT_DC GPIO_NUM_34
-#define TFT_RST GPIO_NUM_48
+#define TFT_SCK 47
+#define TFT_SDA 33
+#define TFT_DC 34
+#define TFT_RST 48
 
-#define BTN_FWD GPIO_NUM_15
-#define BTN_BCK GPIO_NUM_16
-#define BTN_UP GPIO_NUM_37
-#define BTN_DOWN GPIO_NUM_39
-#define BTN_LEFT GPIO_NUM_38
-#define BTN_RIGHT GPIO_NUM_36
-#define BTN_MENU GPIO_NUM_40
+#define BTN_FWD 15
+#define BTN_BCK 16
+#define BTN_UP 37
+#define BTN_DOWN 39
+#define BTN_LEFT 38
+#define BTN_RIGHT 36
+#define BTN_MENU 40
 
 #endif //NEVERA_CONTROLLER_PINS_HPP
