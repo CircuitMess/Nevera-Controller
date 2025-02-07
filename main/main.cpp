@@ -15,6 +15,7 @@
 #include "src/Pins.hpp"
 #include "src/HardwareConfiguration.h"
 #include "src/Services/WiFiAccessPoint.h"
+#include "src/Services/TCPServer.h"
 
 DECLARE_ENUM(Button, Up, Down, Left, Right, Menu, Forward, Backward);
 
@@ -61,6 +62,7 @@ protected:
 		wifi->setHidden(true);
 
 		registerService<WiFiAccessPoint>();
+		registerService<TCPServer>();
 
 		/*static const std::map<Enum<int>, lv_key_t> LVGLMappings = {
 			{ Button::Up, LV_KEY_UP },
