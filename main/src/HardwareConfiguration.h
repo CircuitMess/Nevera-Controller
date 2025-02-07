@@ -27,17 +27,18 @@ private:
 
 	const uint8_t AW9523Address = 0x5b;
 
+	//ports are not inverted since AW9523 led driver is a current source
 	const std::vector<OutputPinDef> AW9523Outputs = {
-		{ 0, true },
-		{ 1, true },
-		{ 2, true },
-		{ 8, false },
-		{ 9, false },
-		{ 10, false },
-		{ 11, true },
-		{ 13, false },
-		{ 14, true },
-		{ 15, true },
+			{ LED_SLIDER0,   false },
+			{ LED_BOOST0,    false },
+			{ LED_BOOST1,    false },
+			{ LED_SLIDER4,   false },
+			{ LED_SLIDER3,   false },
+			{ LED_SLIDER2,   false },
+			{ LED_SLIDER1,   false },
+			{ LED_BATT,      false },
+			{ LED_POWER,     false },
+			{ LED_BACKLIGHT, false }
 	};
 
 	const lgfx::Bus_SPI::config_t DisplayBusConfig = {

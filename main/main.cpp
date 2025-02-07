@@ -8,7 +8,7 @@
 #include <Drivers/Input/InputGPIO.h>
 #include <Periphery/I2C.h>
 #include <Devices/AW9523.h>
-#include <Drivers/Output/OutputDigAW.h>
+#include <Drivers/Output/OutputCurrAW.h>
 #include <Services/ButtonInput.h>
 #include <Misc/Enum.h>
 #include <Periphery/WiFi.h>
@@ -55,9 +55,16 @@ protected:
 		I2C* i2c = registerPeriphery<I2C>(I2CPort::Zero, static_cast<gpio_num_t>(I2C_SDA), static_cast<gpio_num_t>(I2C_SCL));
 
 		AW9523* aw9523 = registerDevice<AW9523>(i2c, config->getAW9523Address());
+		aw9523->setCurrentLimit(AW9523::IMAX);
 
-		OutputDigAW* outputDigAW = registerService<OutputDigAW>(config->getAW9523Outputs(), aw9523);
-		outputDigAW->performWrite(15, 1.0f);
+
+		OutputCurrAW* outputCurrAW = registerService<OutputCurrAW>(config->getAW9523Outputs(), aw9523);
+		for(const auto out: config->getAW9523Outputs()){
+			outputCurrAW->write(out.port, false);
+		}
+
+		outputCurrAW->write(LED_BACKLIGHT, true);
+
 
 		Display* display = registerDevice<Display>(config->getDisplayBusConfig(), config->getDisplayPanelConfig(), [](Sprite& canvas){
 							canvas.setColorDepth(lgfx::rgb565_2Byte);

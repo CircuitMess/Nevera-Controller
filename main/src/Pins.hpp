@@ -4,7 +4,17 @@
 #define I2C_SDA 12
 #define I2C_SCL 13
 
+//AW9523 LEDs
+#define LED_SLIDER0 0
+#define LED_BOOST0 1
+#define LED_BOOST1 2
+#define LED_SLIDER4 8
+#define LED_SLIDER3 9
+#define LED_SLIDER2 10
+#define LED_SLIDER1 11
+#define LED_BATT 13
 #define LED_POWER 14
+#define LED_BACKLIGHT 15
 
 #define PIN_BATT 10
 
