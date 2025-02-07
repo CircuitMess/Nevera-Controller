@@ -3,8 +3,6 @@
 cmake-build-debug
 build
 
-sdkconfig*
-
 spiffs.bin
 
 venv
