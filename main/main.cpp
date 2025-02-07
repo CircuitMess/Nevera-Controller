@@ -1,8 +1,5 @@
 #include <Core/EntryPoint.h>
 #include <FileSystem/SPIFFS.h>
-#include <LV_Interface/InputLVGL.h>
-#include <LV_Interface/LVGL.h>
-#include <LV_Interface/FSLVGL.h>
 #include "Periphery/GPIOPeriph.h"
 #include <Drivers/Interface/InputDriver.h>
 #include <Drivers/Input/InputGPIO.h>
@@ -12,6 +9,7 @@
 #include <Services/ButtonInput.h>
 #include <Misc/Enum.h>
 #include <Periphery/WiFi.h>
+#include <Devices/Display.h>
 #include "src/Pins.hpp"
 #include "src/HardwareConfiguration.h"
 #include "src/Services/WiFiAccessPoint.h"
@@ -96,9 +94,9 @@ protected:
 	}
 
 private:
-	StrongObjectPtr<LVGL> lvgl;
+	/*StrongObjectPtr<LVGL> lvgl;
 	StrongObjectPtr<InputLVGL> inputLvgl;
-	StrongObjectPtr<FSLVGL> fslvgl;
+	StrongObjectPtr<FSLVGL> fslvgl;*/
 };
 
 CMF_MAIN(NeveraController)
