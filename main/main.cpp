@@ -25,6 +25,7 @@ class NeveraController : public Application {
 protected:
 	virtual void begin() noexcept override {
 		Super::begin();
+		nvs_flash_init();
 
 		HardwareConfiguration* config = registerSingleton<HardwareConfiguration>();
 
