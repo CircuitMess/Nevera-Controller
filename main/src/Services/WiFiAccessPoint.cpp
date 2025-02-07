@@ -22,7 +22,7 @@ WiFiAccessPoint::WiFiAccessPoint() {
     wifi->OnAccessPointDisconnection.bind(this, &WiFiAccessPoint::onDisconnected);
 }
 
-void WiFiAccessPoint::generateNewSSID() const noexcept {
+void WiFiAccessPoint::generateNewSSID() noexcept {
     const Application* app = getApp();
     if(app == nullptr) {
         return;

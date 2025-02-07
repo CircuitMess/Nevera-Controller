@@ -19,7 +19,7 @@ public:
 public:
     WiFiAccessPoint();
 
-    void generateNewSSID() const noexcept;
+    static void generateNewSSID() noexcept;
 
 private:
     static constexpr const char* Password = "NeveraNevera";
