@@ -11,8 +11,10 @@
 #include <Drivers/Output/OutputDigAW.h>
 #include <Services/ButtonInput.h>
 #include <Misc/Enum.h>
+#include <Periphery/WiFi.h>
 #include "src/Pins.hpp"
 #include "src/HardwareConfiguration.h"
+#include "src/Services/WiFiAccessPoint.h"
 
 DECLARE_ENUM(Button, Up, Down, Left, Right, Menu, Forward, Backward);
 
@@ -54,6 +56,11 @@ protected:
 						});
 		display->getLGFX().setSwapBytes(true);
 		display->drawTest();
+
+		WiFi* wifi = registerPeriphery<WiFi>();
+		wifi->setHidden(true);
+
+		registerService<WiFiAccessPoint>();
 
 		/*static const std::map<Enum<int>, lv_key_t> LVGLMappings = {
 			{ Button::Up, LV_KEY_UP },
