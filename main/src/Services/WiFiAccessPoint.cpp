@@ -12,7 +12,31 @@ WiFiAccessPoint::WiFiAccessPoint() {
         return;
     }
 
+    const uint32_t randID = rand() % 1000000;
+    const std::string ssid = "Nevera Controller #" + std::to_string(randID);
+
+    wifi->startAccessPoint(ssid, Password);
+    wifi->setHidden(true);
+
     wifi->OnAccessPointConnection.bind(this, &WiFiAccessPoint::onConnected);
+    wifi->OnAccessPointDisconnection.bind(this, &WiFiAccessPoint::onDisconnected);
+}
+
+void WiFiAccessPoint::generateNewSSID() const noexcept {
+    const Application* app = getApp();
+    if(app == nullptr) {
+        return;
+    }
+
+    WiFi* wifi = app->getPeriphery<WiFi>();
+    if(wifi == nullptr) {
+        return;
+    }
+
+    const uint32_t randID = rand() % 1000000;
+    const std::string ssid = "Nevera Controller #" + std::to_string(randID);
+
+    wifi->setNetworkParameters(ssid, Password);
 }
 
 void WiFiAccessPoint::onConnected(const std::string& mac, uint8_t aid, bool isMeshChild) {
@@ -26,14 +50,13 @@ void WiFiAccessPoint::onConnected(const std::string& mac, uint8_t aid, bool isMe
         return;
     }
 
-    // TODO this needs to be uncommented once the pair service and pair screen are completed to allow wifi hiding after connection
-    /*if(!wifi->isHidden()) {
+    if(!wifi->isHidden()) {
         wifi->setHidden(true);
-    }*/
+    }
 
-    OnConnectionEvent.broadcast(mac, ConnectionEventType::Connect);
+    OnConnectionEvent.broadcast(mac, EventType::Connect);
 }
 
 void WiFiAccessPoint::onDisconnected(const std::string& mac, uint8_t aid, bool isMeshChild, uint8_t reason) {
-    OnConnectionEvent.broadcast(mac, ConnectionEventType::Disconnect);
+    OnConnectionEvent.broadcast(mac, EventType::Disconnect);
 }

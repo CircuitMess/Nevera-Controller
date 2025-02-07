@@ -8,17 +8,21 @@ class WiFiAccessPoint : public Object {
     GENERATED_BODY(WiFiAccessPoint, Object)
 
 public:
-    enum class ConnectionEventType : uint8_t {
+    enum class EventType : uint8_t {
         Connect,
         Disconnect
     };
 
-public:
-    DECLARE_EVENT(ConnectionEvent, WiFiAccessPoint, std::string, ConnectionEventType);
+    DECLARE_EVENT(ConnectionEvent, WiFiAccessPoint, std::string, EventType);
     ConnectionEvent OnConnectionEvent{this};
 
 public:
     WiFiAccessPoint();
+
+    void generateNewSSID() const noexcept;
+
+private:
+    static constexpr const char* Password = "NeveraNevera";
 
 private:
     void onConnected(const std::string& mac, uint8_t aid, bool isMeshChild);
