@@ -16,6 +16,7 @@
 #include "src/HardwareConfiguration.h"
 #include "src/Services/WiFiAccessPoint.h"
 #include "src/Services/TCPServer.h"
+#include <nvs_flash.h>
 
 DECLARE_ENUM(Button, Up, Down, Left, Right, Menu, Forward, Backward);
 
@@ -25,7 +26,13 @@ class NeveraController : public Application {
 protected:
 	virtual void begin() noexcept override {
 		Super::begin();
-		nvs_flash_init();
+
+		auto ret = nvs_flash_init();
+		if(ret == ESP_ERR_NVS_NO_FREE_PAGES || ret == ESP_ERR_NVS_NEW_VERSION_FOUND){
+			ESP_ERROR_CHECK(nvs_flash_erase());
+			ret = nvs_flash_init();
+		}
+		ESP_ERROR_CHECK(ret);
 
 		HardwareConfiguration* config = registerSingleton<HardwareConfiguration>();
 
