@@ -4,7 +4,7 @@
 DEFINE_LOG(TCPServer);
 
 TCPServer::TCPServer() noexcept {
-    socket = socket(AF_INET, SOCK_STREAM, IPPROTO_IP);
+    socket = ::socket(AF_INET, SOCK_STREAM, IPPROTO_IP);
     if(socket == -1) {
         CMF_LOG(TCPServer, Error, "Failed to create socket, errno=%d: %s", errno, strerror(errno));
         return;
