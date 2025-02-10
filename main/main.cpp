@@ -12,10 +12,12 @@
 #include <Services/ButtonInput.h>
 #include <Misc/Enum.h>
 #include <Periphery/WiFi.h>
+#include <Util/StateMachine/StateMachine.h>
 #include "src/Pins.hpp"
 #include "src/HardwareConfiguration.h"
 #include "src/Services/WiFiAccessPoint.h"
 #include "src/Services/TCPServer.h"
+#include "src/Screens/IntroScreen.h"
 #include <nvs_flash.h>
 
 DECLARE_ENUM(Button, Up, Down, Left, Right, Menu, Forward, Backward);
@@ -100,6 +102,9 @@ protected:
 		if(!SPIFFS::init()) {
 			return;
 		}
+
+		StateMachine* sm = registerService<StateMachine>(0);
+		sm->setStartingStateType(IntroScreen::staticClass());
 	}
 
 	virtual void tick(float deltaTime) noexcept override {

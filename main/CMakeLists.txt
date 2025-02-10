@@ -13,3 +13,5 @@ file(GLOB_RECURSE SOURCES
         "${CMAKE_CURRENT_SOURCE_DIR}/main.cpp")
 
 idf_component_register(SRCS ${SOURCES} ${LIBS} INCLUDE_DIRS "" ${LIBS_INCL})
+
+spiffs_create_partition_image(storage ../spiffs FLASH_IN_PROJECT)
