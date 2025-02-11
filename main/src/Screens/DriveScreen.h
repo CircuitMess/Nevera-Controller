@@ -18,6 +18,8 @@ private:
 	Bar* bar;
 	Speed* spd;
 
+	uint64_t startTime; // TODO: only used for elements demoing
+
 };
 
 
