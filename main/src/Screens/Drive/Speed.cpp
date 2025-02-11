@@ -12,7 +12,7 @@ void Speed::setLevel(uint8_t level){
 }
 
 void Speed::draw(Sprite* canvas){
-	canvas->fillRect(getX(), getY(), 10, 112);
+	canvas->fillRect(getX(), getY(), 10, 112, ColorBg);
 
 	const int fillDots = std::round((float) Dots * (float) currentLevel() / 100.0f);
 	canvas->fillRect(getX() + 3, getY() + 3 + (Dots - fillDots) * DotHeight, 4, fillDots * DotHeight, ColorFill);
