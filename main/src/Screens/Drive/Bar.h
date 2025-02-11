@@ -12,6 +12,8 @@ public:
 	void setBattCtrl(uint8_t level);
 	void setSignal(uint8_t level);
 
+	void draw(Sprite* canvas) override;
+
 private:
 	std::unique_ptr<ImageElement> car;
 	std::unique_ptr<ImageElement> battCar;
@@ -19,8 +21,8 @@ private:
 	std::unique_ptr<ImageElement> battCtrl;
 	std::unique_ptr<ImageElement> signal;
 
-public:
-	void draw(Sprite* canvas) override;
+	bool blinkCar = false;
+	bool blinkCtrl = false;
 
 };
 

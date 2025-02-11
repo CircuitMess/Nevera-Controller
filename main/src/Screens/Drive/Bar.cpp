@@ -22,6 +22,7 @@ void Bar::setBattCar(uint8_t level){
 	char path[32];
 	sprintf(path, "/spiffs/Drive/Batt%d.raw", level);
 	battCar->setPath(path);
+	blinkCar = level == 0;
 }
 
 void Bar::setBattCtrl(uint8_t level){
@@ -29,6 +30,7 @@ void Bar::setBattCtrl(uint8_t level){
 	char path[32];
 	sprintf(path, "/spiffs/Drive/Batt%d.raw", level);
 	battCtrl->setPath(path);
+	blinkCtrl = level == 0;
 }
 
 void Bar::setSignal(uint8_t level){
@@ -41,7 +43,15 @@ void Bar::setSignal(uint8_t level){
 void Bar::draw(Sprite* canvas){
 	canvas->fillRect(0, 0, 128, 8, TFT_BLACK);
 
-	for(auto el : { &car, &battCar, &ctrl, &battCtrl, &signal }){
+	for(auto el : { &car, &ctrl, &signal }){
 		(*el)->draw(canvas);
+	}
+
+	bool blink = (millis() % 1000) > 500;
+	if(!blink || !blinkCar){
+		battCar->draw(canvas);
+	}
+	if(!blink || !blinkCtrl){
+		battCtrl->draw(canvas);
 	}
 }
