@@ -16,6 +16,8 @@
 #include "src/HardwareConfiguration.h"
 #include "src/Services/WiFiAccessPoint.h"
 #include "src/Services/TCPServer.h"
+#include <Drivers/Output/OutputGPIO.h>
+#include "src/Services/Battery.h"
 #include <nvs_flash.h>
 
 DECLARE_ENUM(Button, Up, Down, Left, Right, Menu, Forward, Backward);
@@ -38,6 +40,7 @@ protected:
 
 		GPIOPeriph* gpio = registerPeriphery<GPIOPeriph>();
 		InputGPIO* inputGPIO = registerDriver<InputGPIO>(config->getGPIOInputs(), gpio);
+		OutputGPIO* outputGPIO = registerDriver<OutputGPIO>(config->getGPIOOutputs(), gpio);
 
 		static const std::vector<std::pair<Enum<int>, InputPin>> ButtonInputs = {
 			{ Button::Up, { inputGPIO, BTN_UP }},
@@ -78,6 +81,11 @@ protected:
 
 		registerService<WiFiAccessPoint>();
 		registerService<TCPServer>();
+
+		Battery* battery = registerService<Battery>(OutputPin{ outputGPIO, PIN_VREF });
+
+		battery->begin();
+
 
 		/*static const std::map<Enum<int>, lv_key_t> LVGLMappings = {
 			{ Button::Up, LV_KEY_UP },
