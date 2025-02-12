@@ -5,7 +5,7 @@
 DEFINE_LOG(UDPListener);
 
 UDPListener::UDPListener() noexcept {
-    socket = ::socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
+    socket = ::socket(AF_INET, SOCK_DGRAM, IPPROTO_IP);
     if(socket == -1) {
         CMF_LOG(UDPListener, Error, "Can't create socket, errno=%d: %s", errno, strerror(errno));
         return;
