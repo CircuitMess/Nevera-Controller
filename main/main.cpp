@@ -16,6 +16,7 @@
 #include "src/HardwareConfiguration.h"
 #include "src/Services/WiFiAccessPoint.h"
 #include "src/Services/TCPServer.h"
+#include "src/Services/UDPListener.h"
 #include <nvs_flash.h>
 
 DECLARE_ENUM(Button, Up, Down, Left, Right, Menu, Forward, Backward);
@@ -78,6 +79,7 @@ protected:
 
 		registerService<WiFiAccessPoint>();
 		registerService<TCPServer>();
+		registerService<UDPListener>();
 
 		/*static const std::map<Enum<int>, lv_key_t> LVGLMappings = {
 			{ Button::Up, LV_KEY_UP },
