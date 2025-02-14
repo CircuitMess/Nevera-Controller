@@ -12,10 +12,12 @@
 #include <Services/ButtonInput.h>
 #include <Misc/Enum.h>
 #include <Periphery/WiFi.h>
+#include <Util/StateMachine/StateMachine.h>
 #include "src/Pins.hpp"
 #include "src/HardwareConfiguration.h"
 #include "src/Services/WiFiAccessPoint.h"
 #include "src/Services/TCPServer.h"
+#include "src/Screens/IntroScreen.h"
 #include "src/Services/UDPListener.h"
 #include <nvs_flash.h>
 
@@ -79,7 +81,6 @@ protected:
 
 		registerService<WiFiAccessPoint>();
 		registerService<TCPServer>();
-		registerService<UDPListener>();
 
 		/*static const std::map<Enum<int>, lv_key_t> LVGLMappings = {
 			{ Button::Up, LV_KEY_UP },
