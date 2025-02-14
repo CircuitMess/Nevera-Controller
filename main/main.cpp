@@ -18,6 +18,7 @@
 #include "src/Services/WiFiAccessPoint.h"
 #include "src/Services/TCPServer.h"
 #include "src/Screens/IntroScreen.h"
+#include "src/Services/UDPListener.h"
 #include <nvs_flash.h>
 
 DECLARE_ENUM(Button, Up, Down, Left, Right, Menu, Forward, Backward);
@@ -102,9 +103,6 @@ protected:
 		if(!SPIFFS::init()) {
 			return;
 		}
-
-		StateMachine* sm = registerService<StateMachine>(0);
-		sm->setStartingStateType(IntroScreen::staticClass());
 	}
 
 	virtual void tick(float deltaTime) noexcept override {
