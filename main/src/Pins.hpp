@@ -12,8 +12,8 @@
 #define LED_SLIDER3 9
 #define LED_SLIDER2 10
 #define LED_SLIDER1 11
-#define LED_BATT 13
-#define LED_POWER 14
+#define LED_BATTFULL 13
+#define LED_BATTLOW 14
 #define LED_BACKLIGHT 15
 
 #define PIN_BATT 10

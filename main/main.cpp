@@ -20,8 +20,14 @@
 #include "src/Screens/IntroScreen.h"
 #include "src/Services/UDPListener.h"
 #include <nvs_flash.h>
+#include <Services/LED/LED.h>
+#include <Services/LED/LEDFadeFunction.h>
+//#include <Services/LED/LEDBlinkFunction.h>
 
 DECLARE_ENUM(Button, Up, Down, Left, Right, Menu, Forward, Backward);
+
+DECLARE_ENUM(LEDs, Slider0, Slider1, Slider2, Slider3, Slider4, Boost0, Boost1, BatteryFull, BatteryLow, Backlight);
+DECLARE_ENUM(RGB_LEDs);
 
 class NeveraController : public Application {
 	GENERATED_BODY(NeveraController, Application)
@@ -75,6 +81,22 @@ protected:
 						});
 		display->getLGFX().setSwapBytes(true);
 		display->drawTest();
+
+
+		static const std::vector<std::pair<LEDs, OutputPin>> ledPins = {
+				{ LEDs::Slider0,     { outputCurrAW, LED_SLIDER0 }},
+				{ LEDs::Slider1,     { outputCurrAW, LED_SLIDER1 }},
+				{ LEDs::Slider2,     { outputCurrAW, LED_SLIDER2 }},
+				{ LEDs::Slider3,     { outputCurrAW, LED_SLIDER3 }},
+				{ LEDs::Slider4,     { outputCurrAW, LED_SLIDER4 }},
+				{ LEDs::Boost0,      { outputCurrAW, LED_BOOST0 }},
+				{ LEDs::Boost1,      { outputCurrAW, LED_BOOST1 }},
+				{ LEDs::BatteryLow,  { outputCurrAW, LED_BATTLOW }},
+				{ LEDs::BatteryFull, { outputCurrAW, LED_BATTFULL }}
+		};
+		LED<LEDs, RGB_LEDs>* ledService = registerService<LED<LEDs, RGB_LEDs>>();
+
+		ledService->reg(ledPins);
 
 		WiFi* wifi = registerPeriphery<WiFi>();
 		wifi->setHidden(true);
