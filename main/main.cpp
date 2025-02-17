@@ -21,7 +21,7 @@
 #include "Services/Comm.h"
 #include <Services/LED/LED.h>
 #include <Services/LED/LEDFadeFunction.h>
-//#include <Services/LED/LEDBlinkFunction.h>
+#include <Services/LED/LEDBlinkFunction.h>
 
 DECLARE_ENUM(Button, Up, Down, Left, Right, Menu, Forward, Backward);
 
