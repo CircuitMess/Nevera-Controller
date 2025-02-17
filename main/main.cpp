@@ -10,6 +10,7 @@
 #include <Misc/Enum.h>
 #include <Periphery/WiFi.h>
 #include <Util/StateMachine/StateMachine.h>
+#include <Devices/Display.h>
 #include "src/Pins.hpp"
 #include "src/HardwareConfiguration.h"
 #include "src/Services/WiFiAccessPoint.h"
@@ -17,6 +18,7 @@
 #include "src/Screens/IntroScreen.h"
 #include "src/Services/UDPListener.h"
 #include <nvs_flash.h>
+#include "Services/Comm.h"
 
 DECLARE_ENUM(Button, Up, Down, Left, Right, Menu, Forward, Backward);
 
@@ -78,6 +80,7 @@ protected:
 
 		registerService<WiFiAccessPoint>();
 		registerService<TCPServer>();
+		registerService<Comm>();
 
 		/*static const std::map<Enum<int>, lv_key_t> LVGLMappings = {
 			{ Button::Up, LV_KEY_UP },
