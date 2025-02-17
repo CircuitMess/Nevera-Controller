@@ -38,8 +38,8 @@ private:
 			{ LED_SLIDER3,   false },
 			{ LED_SLIDER2,   false },
 			{ LED_SLIDER1,   false },
-			{ LED_BATT,      false },
-			{ LED_POWER,     false },
+			{ LED_BATTLOW,   false },
+			{ LED_BATTFULL,  false },
 			{ LED_BACKLIGHT, false }
 	};
 
