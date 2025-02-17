@@ -1,6 +1,8 @@
 #ifndef NEVERA_HARDWARECONFIGURATION_H
 #define NEVERA_HARDWARECONFIGURATION_H
 
+#include <lgfx/v1/panel/Panel_Device.hpp>
+#include <lgfx/v1/platforms/esp32/Bus_SPI.hpp>
 #include <Misc/Singleton.h>
 #include "Pins.hpp"
 

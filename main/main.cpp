@@ -1,8 +1,5 @@
 #include <Core/EntryPoint.h>
 #include <FileSystem/SPIFFS.h>
-#include <LV_Interface/InputLVGL.h>
-#include <LV_Interface/LVGL.h>
-#include <LV_Interface/FSLVGL.h>
 #include "Periphery/GPIOPeriph.h"
 #include <Drivers/Interface/InputDriver.h>
 #include <Drivers/Input/InputGPIO.h>
@@ -112,11 +109,6 @@ protected:
 	virtual void onDestroy() noexcept override {
 		Super::onDestroy();
 	}
-
-private:
-	StrongObjectPtr<LVGL> lvgl;
-	StrongObjectPtr<InputLVGL> inputLvgl;
-	StrongObjectPtr<FSLVGL> fslvgl;
 };
 
 CMF_MAIN(NeveraController)
