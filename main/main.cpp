@@ -1,8 +1,5 @@
 #include <Core/EntryPoint.h>
 #include <FileSystem/SPIFFS.h>
-#include <LV_Interface/InputLVGL.h>
-#include <LV_Interface/LVGL.h>
-#include <LV_Interface/FSLVGL.h>
 #include "Periphery/GPIOPeriph.h"
 #include <Drivers/Interface/InputDriver.h>
 #include <Drivers/Input/InputGPIO.h>
@@ -13,6 +10,7 @@
 #include <Misc/Enum.h>
 #include <Periphery/WiFi.h>
 #include <Util/StateMachine/StateMachine.h>
+#include <Devices/Display.h>
 #include "src/Pins.hpp"
 #include "src/HardwareConfiguration.h"
 #include "src/Services/WiFiAccessPoint.h"
@@ -20,6 +18,7 @@
 #include "src/Screens/IntroScreen.h"
 #include "src/Services/UDPListener.h"
 #include <nvs_flash.h>
+#include "Services/Comm.h"
 #include <Services/LED/LED.h>
 #include <Services/LED/LEDFadeFunction.h>
 //#include <Services/LED/LEDBlinkFunction.h>
@@ -95,7 +94,6 @@ protected:
 				{ LEDs::BatteryFull, { outputCurrAW, LED_BATTFULL }}
 		};
 		LED<LEDs, RGB_LEDs>* ledService = registerService<LED<LEDs, RGB_LEDs>>();
-
 		ledService->reg(ledPins);
 
 		WiFi* wifi = registerPeriphery<WiFi>();
@@ -103,6 +101,7 @@ protected:
 
 		registerService<WiFiAccessPoint>();
 		registerService<TCPServer>();
+		registerService<Comm>();
 
 		/*static const std::map<Enum<int>, lv_key_t> LVGLMappings = {
 			{ Button::Up, LV_KEY_UP },
@@ -134,11 +133,6 @@ protected:
 	virtual void onDestroy() noexcept override {
 		Super::onDestroy();
 	}
-
-private:
-	StrongObjectPtr<LVGL> lvgl;
-	StrongObjectPtr<InputLVGL> inputLvgl;
-	StrongObjectPtr<FSLVGL> fslvgl;
 };
 
 CMF_MAIN(NeveraController)
