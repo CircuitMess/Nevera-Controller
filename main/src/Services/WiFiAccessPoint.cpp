@@ -39,7 +39,7 @@ void WiFiAccessPoint::generateNewSSID() noexcept {
     wifi->setNetworkParameters(ssid, Password);
 }
 
-void WiFiAccessPoint::onConnected(const std::string& mac, uint8_t aid, bool isMeshChild) {
+void WiFiAccessPoint::onConnected(/*const std::string& mac,*/ uint8_t aid, bool isMeshChild) {
     const Application* app = getApp();
     if(app == nullptr) {
         return;
@@ -54,9 +54,9 @@ void WiFiAccessPoint::onConnected(const std::string& mac, uint8_t aid, bool isMe
         wifi->setHidden(true);
     }
 
-    OnConnectionEvent.broadcast(mac, EventType::Connect);
+    OnConnectionEvent.broadcast(/*mac,*/ EventType::Connect);
 }
 
-void WiFiAccessPoint::onDisconnected(const std::string& mac, uint8_t aid, bool isMeshChild, uint8_t reason) {
-    OnConnectionEvent.broadcast(mac, EventType::Disconnect);
+void WiFiAccessPoint::onDisconnected(/*const std::string& mac, */uint8_t aid, bool isMeshChild, uint8_t reason) {
+    OnConnectionEvent.broadcast(/*mac,*/ EventType::Disconnect);
 }

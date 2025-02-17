@@ -5,15 +5,19 @@
 #include <Drivers/Input/InputGPIO.h>
 #include <Periphery/I2C.h>
 #include <Devices/AW9523.h>
-#include <Drivers/Output/OutputDigAW.h>
+#include <Drivers/Output/OutputCurrAW.h>
 #include <Services/ButtonInput.h>
 #include <Misc/Enum.h>
 #include <Periphery/WiFi.h>
+#include <Util/StateMachine/StateMachine.h>
 #include <Devices/Display.h>
 #include "src/Pins.hpp"
 #include "src/HardwareConfiguration.h"
 #include "src/Services/WiFiAccessPoint.h"
 #include "src/Services/TCPServer.h"
+#include "src/Screens/IntroScreen.h"
+#include "src/Services/UDPListener.h"
+#include <nvs_flash.h>
 
 DECLARE_ENUM(Button, Up, Down, Left, Right, Menu, Forward, Backward);
 
@@ -23,6 +27,13 @@ class NeveraController : public Application {
 protected:
 	virtual void begin() noexcept override {
 		Super::begin();
+
+		auto ret = nvs_flash_init();
+		if(ret == ESP_ERR_NVS_NO_FREE_PAGES || ret == ESP_ERR_NVS_NEW_VERSION_FOUND){
+			ESP_ERROR_CHECK(nvs_flash_erase());
+			ret = nvs_flash_init();
+		}
+		ESP_ERROR_CHECK(ret);
 
 		HardwareConfiguration* config = registerSingleton<HardwareConfiguration>();
 
@@ -45,9 +56,16 @@ protected:
 		I2C* i2c = registerPeriphery<I2C>(I2CPort::Zero, static_cast<gpio_num_t>(I2C_SDA), static_cast<gpio_num_t>(I2C_SCL));
 
 		AW9523* aw9523 = registerDevice<AW9523>(i2c, config->getAW9523Address());
+		aw9523->setCurrentLimit(AW9523::IMAX);
 
-		OutputDigAW* outputDigAW = registerService<OutputDigAW>(config->getAW9523Outputs(), aw9523);
-		outputDigAW->performWrite(15, 1.0f);
+
+		OutputCurrAW* outputCurrAW = registerService<OutputCurrAW>(config->getAW9523Outputs(), aw9523);
+		for(const auto out: config->getAW9523Outputs()){
+			outputCurrAW->write(out.port, false);
+		}
+
+		outputCurrAW->write(LED_BACKLIGHT, true);
+
 
 		Display* display = registerDevice<Display>(config->getDisplayBusConfig(), config->getDisplayPanelConfig(), [](Sprite& canvas){
 							canvas.setColorDepth(lgfx::rgb565_2Byte);
@@ -92,11 +110,6 @@ protected:
 	virtual void onDestroy() noexcept override {
 		Super::onDestroy();
 	}
-
-private:
-	/*StrongObjectPtr<LVGL> lvgl;
-	StrongObjectPtr<InputLVGL> inputLvgl;
-	StrongObjectPtr<FSLVGL> fslvgl;*/
 };
 
 CMF_MAIN(NeveraController)

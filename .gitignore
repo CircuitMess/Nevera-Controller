@@ -5,6 +5,8 @@ build
 
 spiffs.bin
 
+sdkconfig.old
+
 venv
 
 managed_components/*
