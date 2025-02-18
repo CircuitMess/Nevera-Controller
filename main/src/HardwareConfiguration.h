@@ -5,6 +5,7 @@
 #include <lgfx/v1/platforms/esp32/Bus_SPI.hpp>
 #include <Misc/Singleton.h>
 #include "Pins.hpp"
+#include <Drivers/Output/OutputPWM.h>
 
 class HardwareConfiguration : public Singleton {
     GENERATED_BODY(HardwareConfiguration, Singleton)
@@ -16,6 +17,10 @@ public:
 	const lgfx::Bus_SPI::config_t& getDisplayBusConfig() const noexcept { return DisplayBusConfig; }
 	const lgfx::Panel_Device::config_t& getDisplayPanelConfig() const noexcept { return DisplayPanelConfig; }
 
+	const std::vector<OutputPWMPinDef>& getPwmOutputs() const{
+		return PWMOutputs;
+	}
+
 private:
     const std::vector<GPIOPinDef> GPIOInputs = {
 		{ { BTN_UP, true }, PullMode::Up },
@@ -23,8 +28,7 @@ private:
 		{ { BTN_LEFT, true }, PullMode::Up },
 		{ { BTN_RIGHT, true }, PullMode::Up },
 		{ { BTN_FWD, true }, PullMode::Up },
-		{ { BTN_BCK, true }, PullMode::Up },
-		{ { BTN_MENU, true }, PullMode::Up }
+		{ { BTN_BCK, true }, PullMode::Up }
 	};
 
 	const uint8_t AW9523Address = 0x5b;
@@ -39,8 +43,7 @@ private:
 			{ LED_SLIDER2,   false },
 			{ LED_SLIDER1,   false },
 			{ LED_BATTLOW,   false },
-			{ LED_BATTFULL,  false },
-			{ LED_BACKLIGHT, false }
+			{ LED_BATTFULL,  false }
 	};
 
 	const lgfx::Bus_SPI::config_t DisplayBusConfig = {
@@ -73,6 +76,9 @@ private:
 		.rgb_order = false,
 		.dlen_16bit = false,
 		.bus_shared = false
+	};
+	const std::vector<OutputPWMPinDef> PWMOutputs = {
+			{{ 0, true }, (gpio_num_t) TFT_BL }
 	};
 };
 

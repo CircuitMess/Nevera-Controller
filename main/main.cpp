@@ -22,6 +22,7 @@
 #include <Services/LED/LED.h>
 #include <Services/LED/LEDFadeFunction.h>
 #include <Services/LED/LEDBlinkFunction.h>
+#include <Drivers/Output/OutputPWM.h>
 
 DECLARE_ENUM(Button, Up, Down, Left, Right, Menu, Forward, Backward);
 
@@ -53,8 +54,7 @@ protected:
 			{ Button::Left, { inputGPIO, BTN_LEFT }},
 			{ Button::Right, { inputGPIO, BTN_RIGHT }},
 			{ Button::Forward, { inputGPIO, BTN_FWD }},
-			{ Button::Backward, { inputGPIO, BTN_BCK }},
-			{ Button::Menu, { inputGPIO, BTN_MENU }}
+			{ Button::Backward, { inputGPIO, BTN_BCK }}
 		};
 
 		ButtonInput* buttonInput = registerService<ButtonInput>();
@@ -63,7 +63,7 @@ protected:
 		I2C* i2c = registerPeriphery<I2C>(I2CPort::Zero, static_cast<gpio_num_t>(I2C_SDA), static_cast<gpio_num_t>(I2C_SCL));
 
 		AW9523* aw9523 = registerDevice<AW9523>(i2c, config->getAW9523Address());
-		aw9523->setCurrentLimit(AW9523::IMAX);
+		aw9523->setCurrentLimit(AW9523::IMAX_1Q);
 
 
 		OutputCurrAW* outputCurrAW = registerService<OutputCurrAW>(config->getAW9523Outputs(), aw9523);
@@ -71,8 +71,8 @@ protected:
 			outputCurrAW->write(out.port, false);
 		}
 
-		outputCurrAW->write(LED_BACKLIGHT, true);
-
+		auto pwm = registerDriver<OutputPWM>(config->getPwmOutputs());
+		pwm->write(0, 1.0f);
 
 		Display* display = registerDevice<Display>(config->getDisplayBusConfig(), config->getDisplayPanelConfig(), [](Sprite& canvas){
 							canvas.setColorDepth(lgfx::rgb565_2Byte);

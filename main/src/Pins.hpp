@@ -14,7 +14,6 @@
 #define LED_SLIDER1 11
 #define LED_BATTFULL 13
 #define LED_BATTLOW 14
-#define LED_BACKLIGHT 15
 
 #define PIN_BATT 10
 
@@ -22,6 +21,7 @@
 #define TFT_SDA 33
 #define TFT_DC 34
 #define TFT_RST 48
+#define TFT_BL 40
 
 #define BTN_FWD 15
 #define BTN_BCK 16
@@ -29,6 +29,5 @@
 #define BTN_DOWN 39
 #define BTN_LEFT 38
 #define BTN_RIGHT 36
-#define BTN_MENU 40
 
 #endif //NEVERA_CONTROLLER_PINS_HPP
