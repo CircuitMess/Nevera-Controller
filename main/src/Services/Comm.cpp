@@ -54,7 +54,9 @@ void Comm::tick(float deltaTime) noexcept {
 
     if(data->dataType == CommData::DataType::Battery) {
         OnBatteryReceived.broadcast(data->value);
-    }
+    }else if(data->dataType == CommData::DataType::NoFeed){
+		OnNoFeedReceived.broadcast();
+	}
 }
 
 TickType_t Comm::getEventScanningTime() const noexcept {
