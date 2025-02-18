@@ -10,6 +10,7 @@
 #include <Misc/Enum.h>
 #include <Periphery/WiFi.h>
 #include <Util/StateMachine/StateMachine.h>
+#include <Devices/Display.h>
 #include "src/Pins.hpp"
 #include "src/HardwareConfiguration.h"
 #include "src/Services/WiFiAccessPoint.h"
@@ -17,9 +18,10 @@
 #include "src/Screens/IntroScreen.h"
 #include "src/Services/UDPListener.h"
 #include <nvs_flash.h>
+#include "Services/Comm.h"
 #include <Services/LED/LED.h>
 #include <Services/LED/LEDFadeFunction.h>
-//#include <Services/LED/LEDBlinkFunction.h>
+#include <Services/LED/LEDBlinkFunction.h>
 
 DECLARE_ENUM(Button, Up, Down, Left, Right, Menu, Forward, Backward);
 
@@ -92,7 +94,6 @@ protected:
 				{ LEDs::BatteryFull, { outputCurrAW, LED_BATTFULL }}
 		};
 		LED<LEDs, RGB_LEDs>* ledService = registerService<LED<LEDs, RGB_LEDs>>();
-
 		ledService->reg(ledPins);
 
 		WiFi* wifi = registerPeriphery<WiFi>();
@@ -100,6 +101,7 @@ protected:
 
 		registerService<WiFiAccessPoint>();
 		registerService<TCPServer>();
+		registerService<Comm>();
 
 		/*static const std::map<Enum<int>, lv_key_t> LVGLMappings = {
 			{ Button::Up, LV_KEY_UP },
