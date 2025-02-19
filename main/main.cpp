@@ -27,6 +27,9 @@
 class NeveraController : public Application {
 	GENERATED_BODY(NeveraController, Application)
 
+public:
+	NeveraController() noexcept : Super(100) {}
+
 protected:
 	virtual void begin() noexcept override {
 		Super::begin();
@@ -75,7 +78,6 @@ protected:
 							canvas.createSprite(128, 128);
 						});
 		display->getLGFX().setSwapBytes(true);
-		//display->drawTest();
 
 
 		static const std::vector<std::pair<LEDs, OutputPin>> ledPins = {
@@ -96,24 +98,6 @@ protected:
 		registerService<WiFiAccessPoint>();
 		registerService<TCPServer>();
 		registerService<Comm>();
-
-		/*static const std::map<Enum<int>, lv_key_t> LVGLMappings = {
-			{ Button::Up, LV_KEY_UP },
-			{ Button::Down, LV_KEY_DOWN },
-			{ Button::Left, LV_KEY_LEFT },
-			{ Button::Right, LV_KEY_RIGHT },
-			{ Button::Forward, LV_KEY_NEXT },
-			{ Button::Backward, LV_KEY_PREV },
-			{ Button::Menu, LV_KEY_HOME },
-		};*/
-
-		// TODO this causes a corrupt heap error for some reason
-		// inputLvgl = newObject<InputLVGL>(this, buttonInput, LVGLMappings);
-
-		/*lvgl = newObject<LVGL>(this, display, [this](lv_disp_t* disp) -> lv_theme_t*{
-			// Init a theme
-			return lv_theme_simple_init(disp);
-		});*/
 
 		if(!SPIFFS::init()) {
 			return;
