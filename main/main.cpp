@@ -22,14 +22,13 @@
 #include <Services/LED/LED.h>
 #include <Services/LED/LEDFadeFunction.h>
 #include <Services/LED/LEDBlinkFunction.h>
-
-DECLARE_ENUM(Button, Up, Down, Left, Right, Menu, Forward, Backward);
-
-DECLARE_ENUM(LEDs, Slider0, Slider1, Slider2, Slider3, Slider4, Boost0, Boost1, BatteryFull, BatteryLow, Backlight);
-DECLARE_ENUM(RGB_LEDs);
+#include "Enum.h"
 
 class NeveraController : public Application {
 	GENERATED_BODY(NeveraController, Application)
+
+public:
+	NeveraController() noexcept : Super(100) {}
 
 protected:
 	virtual void begin() noexcept override {
@@ -79,7 +78,6 @@ protected:
 							canvas.createSprite(128, 128);
 						});
 		display->getLGFX().setSwapBytes(true);
-		display->drawTest();
 
 
 		static const std::vector<std::pair<LEDs, OutputPin>> ledPins = {
@@ -96,34 +94,17 @@ protected:
 		LED<LEDs, RGB_LEDs>* ledService = registerService<LED<LEDs, RGB_LEDs>>();
 		ledService->reg(ledPins);
 
-		WiFi* wifi = registerPeriphery<WiFi>();
-		wifi->setHidden(true);
-
+		registerPeriphery<WiFi>();
 		registerService<WiFiAccessPoint>();
 		registerService<TCPServer>();
 		registerService<Comm>();
 
-		/*static const std::map<Enum<int>, lv_key_t> LVGLMappings = {
-			{ Button::Up, LV_KEY_UP },
-			{ Button::Down, LV_KEY_DOWN },
-			{ Button::Left, LV_KEY_LEFT },
-			{ Button::Right, LV_KEY_RIGHT },
-			{ Button::Forward, LV_KEY_NEXT },
-			{ Button::Backward, LV_KEY_PREV },
-			{ Button::Menu, LV_KEY_HOME },
-		};*/
-
-		// TODO this causes a corrupt heap error for some reason
-		// inputLvgl = newObject<InputLVGL>(this, buttonInput, LVGLMappings);
-
-		/*lvgl = newObject<LVGL>(this, display, [this](lv_disp_t* disp) -> lv_theme_t*{
-			// Init a theme
-			return lv_theme_simple_init(disp);
-		});*/
-
 		if(!SPIFFS::init()) {
 			return;
 		}
+
+		StateMachine* stateMachine = registerService<StateMachine>();
+		stateMachine->setStartingStateType(IntroScreen::staticClass());
 	}
 
 	virtual void tick(float deltaTime) noexcept override {

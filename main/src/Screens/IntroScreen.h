@@ -8,10 +8,6 @@ class IntroScreen : public Screen {
 
 public:
 	IntroScreen();
-
-
-
 };
-
 
 #endif //NEVERA_CONTROLLER_INTROSCREEN_H
