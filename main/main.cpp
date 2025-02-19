@@ -22,11 +22,7 @@
 #include <Services/LED/LED.h>
 #include <Services/LED/LEDFadeFunction.h>
 #include <Services/LED/LEDBlinkFunction.h>
-
-DECLARE_ENUM(Button, Up, Down, Left, Right, Menu, Forward, Backward);
-
-DECLARE_ENUM(LEDs, Slider0, Slider1, Slider2, Slider3, Slider4, Boost0, Boost1, BatteryFull, BatteryLow, Backlight);
-DECLARE_ENUM(RGB_LEDs);
+#include "Enum.h"
 
 class NeveraController : public Application {
 	GENERATED_BODY(NeveraController, Application)
@@ -79,7 +75,7 @@ protected:
 							canvas.createSprite(128, 128);
 						});
 		display->getLGFX().setSwapBytes(true);
-		display->drawTest();
+		//display->drawTest();
 
 
 		static const std::vector<std::pair<LEDs, OutputPin>> ledPins = {
@@ -96,9 +92,7 @@ protected:
 		LED<LEDs, RGB_LEDs>* ledService = registerService<LED<LEDs, RGB_LEDs>>();
 		ledService->reg(ledPins);
 
-		WiFi* wifi = registerPeriphery<WiFi>();
-		wifi->setHidden(true);
-
+		registerPeriphery<WiFi>();
 		registerService<WiFiAccessPoint>();
 		registerService<TCPServer>();
 		registerService<Comm>();
@@ -124,6 +118,9 @@ protected:
 		if(!SPIFFS::init()) {
 			return;
 		}
+
+		StateMachine* stateMachine = registerService<StateMachine>();
+		stateMachine->setStartingStateType(IntroScreen::staticClass());
 	}
 
 	virtual void tick(float deltaTime) noexcept override {

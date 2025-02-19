@@ -1,4 +1,7 @@
 #include "PairScreen.h"
+#include <Periphery/WiFi.h>
+#include "Services/TCPServer.h"
+#include "Services/WiFiAccessPoint.h"
 #include "DriveScreen.h"
 
 PairScreen::PairScreen(){
@@ -10,6 +13,39 @@ PairScreen::PairScreen(){
 
 	addElement(anim);
 	anim->start();
+
+	const Application* app = getApp();
+	if(app == nullptr) {
+		return;
+	}
+
+	const WiFiAccessPoint* ap = app->getService<WiFiAccessPoint>();
+	if(ap == nullptr) {
+		return;
+	}
+
+	ap->generateNewSSID();
+
+	WiFi* wifi = app->getPeriphery<WiFi>();
+	if(wifi == nullptr) {
+		return;
+	}
+
+	wifi->setHidden(false);
+}
+
+PairScreen::~PairScreen() noexcept {
+	const Application* app = getApp();
+	if(app == nullptr) {
+		return;
+	}
+
+	WiFi* wifi = app->getPeriphery<WiFi>();
+	if(wifi == nullptr) {
+		return;
+	}
+
+	wifi->setHidden(true);
 }
 
 void PairScreen::update(){
@@ -20,9 +56,32 @@ void PairScreen::update(){
 
 	arrow->setY(ArrowPos.y - std::round(std::sin(dt * 4.0f) * 2.0f));
 
-	// TODO: for demo purposes. do this after pairing is done
-	if(dt >= 4){
+	const Application* app = getApp();
+	if(app == nullptr) {
+		return;
+	}
+
+	WiFi* wifi = app->getPeriphery<WiFi>();
+	if(wifi == nullptr) {
+		return;
+	}
+
+	if(wifi->isHidden()) {
+		return;
+	}
+
+	TCPServer* tcp = app->getService<TCPServer>();
+	if(tcp == nullptr) {
+		return;
+	}
+
+	if(tcp->isConnected()) {
+		return;
+	}
+
+	if(tcp->accept()) {
 		gotoOut();
+		return;
 	}
 }
 
