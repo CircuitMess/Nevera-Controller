@@ -11,6 +11,7 @@ class PairScreen : public Screen {
 
 public:
 	PairScreen();
+	virtual ~PairScreen() noexcept override;
 
 private:
 	AnimElement* anim = nullptr;
@@ -24,8 +25,6 @@ private:
 
 	static constexpr glm::vec<2, int8_t> ArrowPos = { 34, 55 };
 	uint64_t startTime = 0;
-
 };
-
 
 #endif //NEVERA_CONTROLLER_PAIRSCREEN_H
