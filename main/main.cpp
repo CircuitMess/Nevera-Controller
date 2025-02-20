@@ -23,6 +23,7 @@
 #include <Services/LED/LEDFadeFunction.h>
 #include <Services/LED/LEDBlinkFunction.h>
 #include "Enum.h"
+#include "Drivers/Input/InputTouchGPIO.h"
 
 class NeveraController : public Application {
 	GENERATED_BODY(NeveraController, Application)
@@ -46,14 +47,21 @@ protected:
 		GPIOPeriph* gpio = registerPeriphery<GPIOPeriph>();
 		InputGPIO* inputGPIO = registerDriver<InputGPIO>(config->getGPIOInputs(), gpio);
 
+		auto touchInput = registerDriver<InputTouchGPIO>(config->getTouchInputs());
+
 		static const std::vector<std::pair<Enum<int>, InputPin>> ButtonInputs = {
-			{ Button::Up, { inputGPIO, BTN_UP }},
-			{ Button::Down, { inputGPIO, BTN_DOWN }},
-			{ Button::Left, { inputGPIO, BTN_LEFT }},
-			{ Button::Right, { inputGPIO, BTN_RIGHT }},
-			{ Button::Forward, { inputGPIO, BTN_FWD }},
-			{ Button::Backward, { inputGPIO, BTN_BCK }},
-			{ Button::Menu, { inputGPIO, BTN_MENU }}
+				{ Button::Up,       { inputGPIO,  BTN_UP }},
+				{ Button::Down,     { inputGPIO,  BTN_DOWN }},
+				{ Button::Left,     { inputGPIO,  BTN_LEFT }},
+				{ Button::Right,    { inputGPIO,  BTN_RIGHT }},
+				{ Button::Forward,  { inputGPIO,  BTN_FWD }},
+				{ Button::Backward, { inputGPIO,  BTN_BCK }},
+				{ Button::Menu,     { inputGPIO,  BTN_MENU }},
+				{ Button::Slider0,  { touchInput, SLIDER_0 }},
+				{ Button::Slider1,  { touchInput, SLIDER_1 }},
+				{ Button::Slider2,  { touchInput, SLIDER_2 }},
+				{ Button::Slider3,  { touchInput, SLIDER_3 }},
+				{ Button::Slider4,  { touchInput, SLIDER_4 }}
 		};
 
 		ButtonInput* buttonInput = registerService<ButtonInput>();

@@ -5,6 +5,7 @@
 #include <lgfx/v1/platforms/esp32/Bus_SPI.hpp>
 #include <Misc/Singleton.h>
 #include "Pins.hpp"
+#include <Drivers/Input/InputTouchGPIO.h>
 
 class HardwareConfiguration : public Singleton {
     GENERATED_BODY(HardwareConfiguration, Singleton)
@@ -15,6 +16,8 @@ public:
 	const std::vector<OutputPinDef>& getAW9523Outputs() const noexcept { return AW9523Outputs; }
 	const lgfx::Bus_SPI::config_t& getDisplayBusConfig() const noexcept { return DisplayBusConfig; }
 	const lgfx::Panel_Device::config_t& getDisplayPanelConfig() const noexcept { return DisplayPanelConfig; }
+
+	const std::vector<TouchPinDef>& getTouchInputs() const{ return TouchInputs; }
 
 private:
     const std::vector<GPIOPinDef> GPIOInputs = {
@@ -73,6 +76,20 @@ private:
 		.rgb_order = false,
 		.dlen_16bit = false,
 		.bus_shared = false
+	};
+
+
+	/**
+	 * Empirically determined.
+	 * Value should be as low as possible, but such that touch from the opposite side of the PCB isn't registered.
+	 */
+	static constexpr uint32_t TouchThreshold = 5000;
+	const std::vector<TouchPinDef> TouchInputs = {
+			{{SLIDER_0, false}, TouchThreshold},
+			{{SLIDER_1, false}, TouchThreshold},
+			{{SLIDER_2, false}, TouchThreshold},
+			{{SLIDER_3, false}, TouchThreshold},
+			{{SLIDER_4, false}, TouchThreshold}
 	};
 };
 
