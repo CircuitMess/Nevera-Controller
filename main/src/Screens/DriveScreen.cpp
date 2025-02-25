@@ -3,7 +3,6 @@
 #include "Memory/ObjectMemory.h"
 
 DriveScreen::DriveScreen(){
-	heapRep("DriveScreen constr");
 	lastFrame.resize(160*120);
 
 	bar = new Bar();

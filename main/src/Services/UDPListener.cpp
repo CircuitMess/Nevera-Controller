@@ -1,4 +1,5 @@
 #include "UDPListener.h"
+#include "CommData.h"
 #include <Log/Log.h>
 #include <lwip/sockets.h>
 
@@ -16,8 +17,8 @@ UDPListener::UDPListener() noexcept {
 
     sockaddr_in addr{};
     addr.sin_family = AF_INET;
-    addr.sin_port = htons(6001);
-    inet_pton(AF_INET, "11.0.0.2", &addr.sin_addr);
+    addr.sin_port = htons(UDPPort);
+    inet_pton(AF_INET, ControllerIP, &addr.sin_addr);
     if(bind(socket, reinterpret_cast<sockaddr*>(&addr), sizeof(addr)) != 0){
         CMF_LOG(UDPListener, Error, "Can't bind address to socket, errno=%d: %s", errno, strerror(errno));
         socket = -1;
@@ -33,13 +34,15 @@ UDPListener::~UDPListener() noexcept {
     close(socket);
 }
 
-size_t UDPListener::read(std::vector<uint8_t>& buffer) const noexcept {
+int32_t UDPListener::read(std::vector<uint8_t>& buffer) const noexcept {
     if(socket == -1){
         CMF_LOG(UDPListener, Error, "Read, but socket not set-up");
         return -1;
     }
 
     if(buffer.empty()) {
+		CMF_LOG(UDPListener, Error, "Buffer empty");
+
         return 0;
     }
 

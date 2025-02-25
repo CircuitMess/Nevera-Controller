@@ -94,56 +94,10 @@ protected:
 		LED<LEDs, RGB_LEDs>* ledService = registerService<LED<LEDs, RGB_LEDs>>();
 		ledService->reg(ledPins);
 
-		heapRep("before wifi");
-
 		registerPeriphery<WiFi>();
 		registerService<WiFiAccessPoint>();
 		registerService<TCPServer>();
 		registerService<Comm>();
-
-		heapRep("after wifi");
-
-		/*static const std::map<Enum<int>, lv_key_t> LVGLMappings = {
-			{ Button::Up, LV_KEY_UP },
-			{ Button::Down, LV_KEY_DOWN },
-			{ Button::Left, LV_KEY_LEFT },
-			{ Button::Right, LV_KEY_RIGHT },
-			{ Button::Forward, LV_KEY_NEXT },
-			{ Button::Backward, LV_KEY_PREV },
-			{ Button::Menu, LV_KEY_HOME },
-		};*/
-
-		// TODO this causes a corrupt heap error for some reason
-		// inputLvgl = newObject<InputLVGL>(this, buttonInput, LVGLMappings);
-
-		/*lvgl = newObject<LVGL>(this, display, [this](lv_disp_t* disp) -> lv_theme_t*{
-			// Init a theme
-			return lv_theme_simple_init(disp);
-		});*/
-
-/*
-		buttonInput->OnButtonEvent.bind(this, [ledService](Enum<int> btn, ButtonInput::Action action){
-			switch(btn){
-				case Button::Slider0:
-					ledService->on(LEDs::Slider0, action == ButtonInput::Action::Press ? 0.1f : 0);
-					break;
-				case Button::Slider1:
-					ledService->on(LEDs::Slider1, action == ButtonInput::Action::Press ? 0.1f : 0);
-					break;
-				case Button::Slider2:
-					ledService->on(LEDs::Slider2, action == ButtonInput::Action::Press ? 0.1f : 0);
-					break;
-				case Button::Slider3:
-					ledService->on(LEDs::Slider3, action == ButtonInput::Action::Press ? 0.1f : 0);
-					break;
-
-				case Button::Slider4:
-					ledService->on(LEDs::Slider4, action == ButtonInput::Action::Press ? 0.1f : 0);
-					break;
-			}
-			printf("Button %d %s\n", (int) btn, action == ButtonInput::Action::Press ? "pressed" : "released");
-		});
-*/
 
 		if(!SPIFFS::init()) {
 			return;
@@ -151,10 +105,6 @@ protected:
 
 		StateMachine* stateMachine = registerService<StateMachine>();
 		stateMachine->setStartingStateType<IntroScreen>();
-
-
-		heapRep("after stateMachine");
-
 	}
 
 	virtual void tick(float deltaTime) noexcept override {
