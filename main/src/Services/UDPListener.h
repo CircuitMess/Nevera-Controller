@@ -12,6 +12,8 @@ public:
 
 	int32_t read(std::vector<uint8_t>& buffer) const noexcept;
 
+	int32_t read(uint8_t* buf, size_t count) const;
+
 private:
     int socket = -1;
 };

@@ -18,9 +18,9 @@ Feed::Feed() : dataAvailable(0){
 		frameImg.resize(160 * 120);
 	}
 
-	readTask = newObject<Threaded>(this, [this](){ readLoop(); }, "FeedRead", 0, 4096, 5, 0);
+	readTask = newObject<Threaded>(this, [this](){ readLoop(); }, "FeedRead", 0, 4096, 5, 1);
 
-	decodeTask = newObject<Threaded>(this, [this](){ decodeLoop(); }, "FeedDecode", 0, 4096, 5, 0);
+	decodeTask = newObject<Threaded>(this, [this](){ decodeLoop(); }, "FeedDecode", 0, 4096, 5, 1);
 }
 
 Feed::~Feed(){
@@ -57,8 +57,7 @@ bool Feed::nextFrame(std::function<void(const FeedFrame& info, const Color* img)
 }
 
 void Feed::readLoop(){
-	int bytes = udp->read(readBuf);
-	ESP_LOGI(tag, "UDP received: %d\n", bytes);
+	int bytes = udp->read(readBuf.data(), readBuf.size());
 
 	if(bytes <= 0){
 		delayMillis(10);
@@ -233,11 +232,10 @@ bool Feed::findFrame(){
 std::unique_ptr<FeedFrame> Feed::deserializeFrame(RingBuffer& buf, size_t size){
 
 	auto frame = std::make_unique<FeedFrame>();
-
-	buf.read((uint8_t*) &frame->size, sizeof(FeedFrame::size));
+	frame->size = size;
 
 	if(buf.readAvailable() < frame->size){
-		ESP_LOGE(tag, "Deserialize data too short, lacks JPG frame");
+		ESP_LOGE(tag, "Deserialize data too short, lacks JPG frame (%d, expected %d)", buf.readAvailable(), frame->size);
 		return nullptr;
 	}
 

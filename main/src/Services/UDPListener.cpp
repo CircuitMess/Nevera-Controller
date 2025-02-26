@@ -6,9 +6,6 @@
 DEFINE_LOG(UDPListener);
 
 UDPListener::UDPListener() noexcept {
-	printf("UDPListener constructor\n");
-
-
     socket = ::socket(AF_INET, SOCK_DGRAM, IPPROTO_IP);
     if(socket == -1) {
         CMF_LOG(UDPListener, Error, "Can't create socket, errno=%d: %s", errno, strerror(errno));
@@ -27,7 +24,6 @@ UDPListener::UDPListener() noexcept {
 
     int flags = fcntl(socket, F_GETFL, 0);
     fcntl(socket, F_SETFL, flags | O_NONBLOCK);
-	printf("UDPListener constructor done\n");
 }
 
 UDPListener::~UDPListener() noexcept {
@@ -35,32 +31,25 @@ UDPListener::~UDPListener() noexcept {
 }
 
 int32_t UDPListener::read(std::vector<uint8_t>& buffer) const noexcept {
-    if(socket == -1){
-        CMF_LOG(UDPListener, Error, "Read, but socket not set-up");
-        return -1;
-    }
+   return read(buffer.data(), buffer.size());
+}
 
-    if(buffer.empty()) {
-		CMF_LOG(UDPListener, Error, "Buffer empty");
+int32_t UDPListener::read(uint8_t* buf, size_t count) const{
+	if(socket == -1){
+		CMF_LOG(UDPListener, Error, "Read, but socket not set-up");
+		return false;
+	}
 
-        return 0;
-    }
+	if(count == 0 || buf == nullptr) return 0;
 
-    int bytes = ::recv(socket, buffer.data(), buffer.size(), 0);
+	int bytes = ::recv(socket, buf, count, 0);
 
-    if(bytes < 0){
-        if(errno == EAGAIN || errno == EWOULDBLOCK) {
-            return 0;
-        }
+	if(bytes < 0){
+		if(errno == EAGAIN || errno == EWOULDBLOCK) return 0;
 
 		CMF_LOG(UDPListener, Error, "Read error, errno=%d: %s", errno, strerror(errno));
+		return -1;
+	}
 
-        return -1;
-    }
-
-	printf("buffer resize to %d\n", bytes);
-
-	buffer.resize(bytes);
-
-    return bytes;
+	return bytes;
 }
