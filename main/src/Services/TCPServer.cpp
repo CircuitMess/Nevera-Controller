@@ -48,7 +48,9 @@ bool TCPServer::accept() noexcept {
     sockaddr_in address_client{};
     socklen_t address_client_len = sizeof(address_client);
 
-    if((client = ::accept(socket, reinterpret_cast<sockaddr*>(&address_client), &address_client_len) == -1)) {
+    client = ::accept(socket, reinterpret_cast<sockaddr*>(&address_client), &address_client_len);
+
+    if(client == -1) {
         CMF_LOG(TCPServer, Warning, "Cannot accept, errno=%d: %s", errno, strerror(errno));
         return false;
     }

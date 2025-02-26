@@ -1,6 +1,8 @@
 #ifndef NEVERA_HARDWARECONFIGURATION_H
 #define NEVERA_HARDWARECONFIGURATION_H
 
+#include <lgfx/v1/panel/Panel_Device.hpp>
+#include <lgfx/v1/platforms/esp32/Bus_SPI.hpp>
 #include <Misc/Singleton.h>
 #include "Pins.hpp"
 
@@ -41,8 +43,8 @@ private:
 			{ LED_SLIDER3,   false },
 			{ LED_SLIDER2,   false },
 			{ LED_SLIDER1,   false },
-			{ LED_BATT,      false },
-			{ LED_POWER,     false },
+			{ LED_BATTLOW,   false },
+			{ LED_BATTFULL,  false },
 			{ LED_BACKLIGHT, false }
 	};
 

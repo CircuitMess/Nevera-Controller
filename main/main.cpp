@@ -1,8 +1,5 @@
 #include <Core/EntryPoint.h>
 #include <FileSystem/SPIFFS.h>
-#include <LV_Interface/InputLVGL.h>
-#include <LV_Interface/LVGL.h>
-#include <LV_Interface/FSLVGL.h>
 #include "Periphery/GPIOPeriph.h"
 #include <Drivers/Interface/InputDriver.h>
 #include <Drivers/Input/InputGPIO.h>
@@ -12,15 +9,22 @@
 #include <Services/ButtonInput.h>
 #include <Misc/Enum.h>
 #include <Periphery/WiFi.h>
+#include <Util/StateMachine/StateMachine.h>
+#include <Devices/Display.h>
 #include "src/Pins.hpp"
 #include "src/HardwareConfiguration.h"
 #include "src/Services/WiFiAccessPoint.h"
 #include "src/Services/TCPServer.h"
+#include "src/Screens/IntroScreen.h"
+#include "src/Services/UDPListener.h"
 #include <Drivers/Output/OutputGPIO.h>
 #include "src/Services/Battery.h"
 #include <nvs_flash.h>
-
-DECLARE_ENUM(Button, Up, Down, Left, Right, Menu, Forward, Backward);
+#include "Services/Comm.h"
+#include <Services/LED/LED.h>
+#include <Services/LED/LEDFadeFunction.h>
+#include <Services/LED/LEDBlinkFunction.h>
+#include "Enum.h"
 
 class NeveraController : public Application {
 	GENERATED_BODY(NeveraController, Application)
@@ -40,7 +44,6 @@ protected:
 
 		GPIOPeriph* gpio = registerPeriphery<GPIOPeriph>();
 		InputGPIO* inputGPIO = registerDriver<InputGPIO>(config->getGPIOInputs(), gpio);
-		OutputGPIO* outputGPIO = registerDriver<OutputGPIO>(config->getGPIOOutputs(), gpio);
 
 		static const std::vector<std::pair<Enum<int>, InputPin>> ButtonInputs = {
 			{ Button::Up, { inputGPIO, BTN_UP }},
@@ -74,40 +77,37 @@ protected:
 							canvas.createSprite(128, 128);
 						});
 		display->getLGFX().setSwapBytes(true);
-		display->drawTest();
 
-		WiFi* wifi = registerPeriphery<WiFi>();
-		wifi->setHidden(true);
 
+		static const std::vector<std::pair<LEDs, OutputPin>> ledPins = {
+				{ LEDs::Slider0,     { outputCurrAW, LED_SLIDER0 }},
+				{ LEDs::Slider1,     { outputCurrAW, LED_SLIDER1 }},
+				{ LEDs::Slider2,     { outputCurrAW, LED_SLIDER2 }},
+				{ LEDs::Slider3,     { outputCurrAW, LED_SLIDER3 }},
+				{ LEDs::Slider4,     { outputCurrAW, LED_SLIDER4 }},
+				{ LEDs::Boost0,      { outputCurrAW, LED_BOOST0 }},
+				{ LEDs::Boost1,      { outputCurrAW, LED_BOOST1 }},
+				{ LEDs::BatteryLow,  { outputCurrAW, LED_BATTLOW }},
+				{ LEDs::BatteryFull, { outputCurrAW, LED_BATTFULL }}
+		};
+		LED<LEDs, RGB_LEDs>* ledService = registerService<LED<LEDs, RGB_LEDs>>();
+		ledService->reg(ledPins);
+
+		registerPeriphery<WiFi>();
 		registerService<WiFiAccessPoint>();
 		registerService<TCPServer>();
+		registerService<Comm>();
 
 		Battery* battery = registerService<Battery>(OutputPin{ outputGPIO, PIN_VREF });
 
 		battery->begin();
 
-
-		/*static const std::map<Enum<int>, lv_key_t> LVGLMappings = {
-			{ Button::Up, LV_KEY_UP },
-			{ Button::Down, LV_KEY_DOWN },
-			{ Button::Left, LV_KEY_LEFT },
-			{ Button::Right, LV_KEY_RIGHT },
-			{ Button::Forward, LV_KEY_NEXT },
-			{ Button::Backward, LV_KEY_PREV },
-			{ Button::Menu, LV_KEY_HOME },
-		};*/
-
-		// TODO this causes a corrupt heap error for some reason
-		// inputLvgl = newObject<InputLVGL>(this, buttonInput, LVGLMappings);
-
-		/*lvgl = newObject<LVGL>(this, display, [this](lv_disp_t* disp) -> lv_theme_t*{
-			// Init a theme
-			return lv_theme_simple_init(disp);
-		});*/
-
 		if(!SPIFFS::init()) {
 			return;
 		}
+
+		StateMachine* stateMachine = registerService<StateMachine>();
+		stateMachine->setStartingStateType(IntroScreen::staticClass());
 	}
 
 	virtual void tick(float deltaTime) noexcept override {
@@ -117,11 +117,6 @@ protected:
 	virtual void onDestroy() noexcept override {
 		Super::onDestroy();
 	}
-
-private:
-	StrongObjectPtr<LVGL> lvgl;
-	StrongObjectPtr<InputLVGL> inputLvgl;
-	StrongObjectPtr<FSLVGL> fslvgl;
 };
 
 CMF_MAIN(NeveraController)
