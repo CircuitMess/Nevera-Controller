@@ -17,6 +17,8 @@
 #include "src/Services/TCPServer.h"
 #include "src/Screens/IntroScreen.h"
 #include "src/Services/UDPListener.h"
+#include <Drivers/Output/OutputGPIO.h>
+#include "src/Services/Battery.h"
 #include <nvs_flash.h>
 #include "Services/Comm.h"
 #include <Services/LED/LED.h>
@@ -26,9 +28,6 @@
 
 class NeveraController : public Application {
 	GENERATED_BODY(NeveraController, Application)
-
-public:
-	NeveraController() noexcept : Super(100) {}
 
 protected:
 	virtual void begin() noexcept override {
@@ -98,6 +97,10 @@ protected:
 		registerService<WiFiAccessPoint>();
 		registerService<TCPServer>();
 		registerService<Comm>();
+
+		Battery* battery = registerService<Battery>(OutputPin{ outputGPIO, PIN_VREF });
+
+		battery->begin();
 
 		if(!SPIFFS::init()) {
 			return;

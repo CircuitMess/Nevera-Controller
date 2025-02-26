@@ -11,6 +11,7 @@ class HardwareConfiguration : public Singleton {
 
 public:
 	const std::vector<GPIOPinDef>& getGPIOInputs() const noexcept { return GPIOInputs; }
+	const std::vector<OutputPinDef>& getGPIOOutputs() const noexcept { return GPIOOutputs; }
 	uint8_t getAW9523Address() const noexcept { return AW9523Address; }
 	const std::vector<OutputPinDef>& getAW9523Outputs() const noexcept { return AW9523Outputs; }
 	const lgfx::Bus_SPI::config_t& getDisplayBusConfig() const noexcept { return DisplayBusConfig; }
@@ -25,6 +26,10 @@ private:
 		{ { BTN_FWD, true }, PullMode::Up },
 		{ { BTN_BCK, true }, PullMode::Up },
 		{ { BTN_MENU, true }, PullMode::Up }
+	};
+
+	const std::vector<OutputPinDef> GPIOOutputs = {
+			{PIN_VREF, false}
 	};
 
 	const uint8_t AW9523Address = 0x5b;

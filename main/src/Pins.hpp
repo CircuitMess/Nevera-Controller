@@ -17,6 +17,7 @@
 #define LED_BACKLIGHT 15
 
 #define PIN_BATT 10
+#define PIN_VREF 35
 
 #define TFT_SCK 47
 #define TFT_SDA 33
