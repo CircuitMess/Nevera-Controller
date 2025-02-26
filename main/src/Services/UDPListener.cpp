@@ -39,8 +39,33 @@ size_t UDPListener::read(std::vector<uint8_t>& buffer) const noexcept {
         return 0;
     }
 
-    int bytes = ::recv(socket, buffer.data(), buffer.size(), 0);
+    const int bytes = ::recv(socket, buffer.data(), buffer.size(), 0);
     buffer.resize(bytes);
+
+    if(bytes < 0){
+        if(errno == EAGAIN || errno == EWOULDBLOCK) {
+            return 0;
+        }
+
+        CMF_LOG(UDPListener, Error, "Read error, errno=%d: %s", errno, strerror(errno));
+
+        return -1;
+    }
+
+    return bytes;
+}
+
+size_t UDPListener::read(uint8_t* buffer, size_t count) const noexcept {
+    if(socket == -1){
+        CMF_LOG(UDPListener, Error, "Read, but socket not set-up");
+        return -1;
+    }
+
+    if(buffer == nullptr || count == 0) {
+        return 0;
+    }
+
+    const int bytes = ::recv(socket, buffer, count, 0);
 
     if(bytes < 0){
         if(errno == EAGAIN || errno == EWOULDBLOCK) {
