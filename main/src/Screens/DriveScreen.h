@@ -20,6 +20,21 @@ private:
 
 	uint64_t startTime; // TODO: only used for elements demoing
 
+	/**
+	 * 	Direction encoding:
+	 * 	0 - forward, -1 - left, 1 - right
+	 */
+	static int8_t getDirection();
+
+	/**
+	 * 	Boost encoding:
+	 * 	max: 3, min: -3
+	 * 	0 - no movement
+	 */
+	static float getBoost();
+
+	int8_t dir = 0;
+	float boost = 0;
 };
 
 
