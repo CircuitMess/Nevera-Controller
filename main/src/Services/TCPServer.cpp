@@ -102,6 +102,7 @@ bool TCPServer::read(std::vector<uint8_t>& buffer) noexcept {
         const int now = ::read(client, buffer.data() + total, buffer.size() - total);
 
         if(now == 0) {
+			CMF_LOG(TCPServer, Error, "Received 0, disconnect");
             disconnect();
             return false;
         }else if(now < 0) {
@@ -109,6 +110,7 @@ bool TCPServer::read(std::vector<uint8_t>& buffer) noexcept {
                 vTaskDelay(1);
                 continue;
             }else {
+				CMF_LOG(TCPServer, Error, "Received err \"%s\", disconnect", strerror(errno));
                 disconnect();
                 return false;
             }
@@ -135,6 +137,7 @@ bool TCPServer::write(const std::vector<uint8_t>& buffer) noexcept {
         const int now = ::write(client, buffer.data() + total, buffer.size() - total);
 
         if(now == 0) {
+			CMF_LOG(TCPServer, Error, "Received 0 on sending, disconnect");
             disconnect();
             return false;
         }else if(now < 0) {
@@ -142,7 +145,8 @@ bool TCPServer::write(const std::vector<uint8_t>& buffer) noexcept {
                 vTaskDelay(1);
                 continue;
             }else {
-                disconnect();
+				CMF_LOG(TCPServer, Error, "Received err \"%s\" on sending, disconnect", strerror(errno));
+				disconnect();
                 return false;
             }
         }
@@ -168,6 +172,7 @@ bool TCPServer::read(uint8_t* buffer, size_t count) noexcept {
         const int now = ::read(client, buffer + total, count - total);
 
         if(now == 0) {
+			CMF_LOG(TCPServer, Error, "Received 0, disconnect");
             disconnect();
             return false;
         }else if(now < 0) {
@@ -175,6 +180,7 @@ bool TCPServer::read(uint8_t* buffer, size_t count) noexcept {
                 vTaskDelay(1);
                 continue;
             }else {
+				CMF_LOG(TCPServer, Error, "Received err \"%s\", disconnect", strerror(errno));
                 disconnect();
                 return false;
             }
@@ -201,6 +207,7 @@ bool TCPServer::write(uint8_t* buffer, size_t count) noexcept {
         const int now = ::write(client, buffer + total, count - total);
 
         if(now == 0) {
+			CMF_LOG(TCPServer, Error, "Received 0 on sending, disconnect");
             disconnect();
             return false;
         }else if(now < 0) {
@@ -208,6 +215,7 @@ bool TCPServer::write(uint8_t* buffer, size_t count) noexcept {
                 vTaskDelay(1);
                 continue;
             }else {
+				CMF_LOG(TCPServer, Error, "Received err \"%s\" on sending, disconnect", strerror(errno));
                 disconnect();
                 return false;
             }
