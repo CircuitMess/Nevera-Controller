@@ -45,6 +45,7 @@ protected:
 
 		GPIOPeriph* gpio = registerPeriphery<GPIOPeriph>();
 		InputGPIO* inputGPIO = registerDriver<InputGPIO>(config->getGPIOInputs(), gpio);
+		OutputGPIO* outputGPIO = registerDriver<OutputGPIO>(config->getGPIOOutputs(), gpio);
 
 		auto touchInput = registerDriver<InputTouchGPIO>(config->getTouchInputs());
 
@@ -120,6 +121,7 @@ protected:
 
 	virtual void tick(float deltaTime) noexcept override {
 		Super::tick(deltaTime);
+		vTaskDelay(portMAX_DELAY);
 	}
 
 	virtual void onDestroy() noexcept override {
