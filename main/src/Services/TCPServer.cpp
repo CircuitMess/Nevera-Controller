@@ -100,7 +100,7 @@ bool TCPServer::read(std::vector<uint8_t>& buffer) noexcept {
 
     size_t total = 0;
     while(total < buffer.size()) {
-        int now = ::read(client, buffer.data() + total, buffer.size() - total);
+        const int now = ::read(client, buffer.data() + total, buffer.size() - total);
 
         if(now == 0) {
             disconnect();
@@ -133,7 +133,73 @@ bool TCPServer::write(const std::vector<uint8_t>& buffer) noexcept {
 
     size_t total = 0;
     while(total < buffer.size()) {
-        int now = ::write(client, buffer.data() + total, buffer.size() - total);
+        const int now = ::write(client, buffer.data() + total, buffer.size() - total);
+
+        if(now == 0) {
+            disconnect();
+            return false;
+        }else if(now < 0) {
+            if(errno == EAGAIN || errno == EWOULDBLOCK) {
+                vTaskDelay(1);
+                continue;
+            }else {
+                disconnect();
+                return false;
+            }
+        }
+
+        total += now;
+    }
+
+    return true;
+}
+
+bool TCPServer::read(uint8_t* buffer, size_t count) noexcept {
+    if(client == -1) {
+        CMF_LOG(TCPServer, Error, "Read, but client is invalid");
+        return false;
+    }
+
+    if(buffer == nullptr || count == 0) {
+        return true;
+    }
+
+    size_t total = 0;
+    while(total < count) {
+        const int now = ::read(client, buffer + total, count - total);
+
+        if(now == 0) {
+            disconnect();
+            return false;
+        }else if(now < 0) {
+            if(errno == EAGAIN || errno == EWOULDBLOCK) {
+                vTaskDelay(1);
+                continue;
+            }else {
+                disconnect();
+                return false;
+            }
+        }
+
+        total += now;
+    }
+
+    return true;
+}
+
+bool TCPServer::write(uint8_t* buffer, size_t count) noexcept {
+    if(client == -1) {
+        CMF_LOG(TCPServer, Error, "Write, but client is invalid");
+        return false;
+    }
+
+    if(buffer == nullptr || count == 0) {
+        return true;
+    }
+
+    size_t total = 0;
+    while(total < count) {
+        const int now = ::write(client, buffer + total, count - total);
 
         if(now == 0) {
             disconnect();

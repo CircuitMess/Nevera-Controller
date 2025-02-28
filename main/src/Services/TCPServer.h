@@ -25,6 +25,9 @@ public:
     bool read(std::vector<uint8_t>& buffer) noexcept;
     bool write(const std::vector<uint8_t>& buffer) noexcept;
 
+    bool read(uint8_t* buffer, size_t count) noexcept;
+    bool write(uint8_t* buffer, size_t count) noexcept;
+
 private:
     int socket = -1;
     int client = -1;

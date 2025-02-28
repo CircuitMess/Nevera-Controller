@@ -10,9 +10,8 @@ public:
     UDPListener() noexcept;
     virtual ~UDPListener() noexcept override;
 
-	int32_t read(std::vector<uint8_t>& buffer) const noexcept;
-
-	int32_t read(uint8_t* buf, size_t count) const;
+    size_t read(std::vector<uint8_t>& buffer) const noexcept;
+    size_t read(uint8_t* buffer, size_t count) const noexcept;
 
 private:
     int socket = -1;

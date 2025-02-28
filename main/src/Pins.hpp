@@ -17,6 +17,7 @@
 #define LED_BACKLIGHT 15
 
 #define PIN_BATT 10
+#define PIN_VREF 35
 
 #define TFT_SCK 47
 #define TFT_SDA 33
@@ -30,5 +31,12 @@
 #define BTN_LEFT 38
 #define BTN_RIGHT 36
 #define BTN_MENU 40
+
+//Slider touchpads are indexed the same as GPIOs
+#define SLIDER_0 2
+#define SLIDER_1 4
+#define SLIDER_2 5
+#define SLIDER_3 6
+#define SLIDER_4 7
 
 #endif //NEVERA_CONTROLLER_PINS_HPP
