@@ -17,7 +17,7 @@ TCPServer::TCPServer() noexcept {
 
     inet_pton(AF_INET, ControllerIP, &address.sin_addr);
 
-    if(bind(socket, reinterpret_cast<sockaddr*>(&address), sizeof(address)) != -0) {
+    if(bind(socket, reinterpret_cast<sockaddr*>(&address), sizeof(address)) != 0) {
         CMF_LOG(TCPServer, Error, "Failed to bind address to socket, errno=%d: %s", errno, strerror(errno));
         socket = -1;
         return;

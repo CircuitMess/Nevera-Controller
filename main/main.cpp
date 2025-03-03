@@ -116,7 +116,7 @@ protected:
 		}
 
 		StateMachine* stateMachine = registerService<StateMachine>();
-		stateMachine->setStartingStateType<IntroScreen>();
+		stateMachine->setStartingStateType(IntroScreen::staticClass());
 	}
 
 	virtual void tick(float deltaTime) noexcept override {

@@ -30,7 +30,7 @@ UDPListener::~UDPListener() noexcept {
     close(socket);
 }
 
-int32_t UDPListener::read(std::vector<uint8_t>& buffer) const noexcept {
+size_t UDPListener::read(std::vector<uint8_t>& buffer) const noexcept {
    return read(buffer.data(), buffer.size());
 }
 
