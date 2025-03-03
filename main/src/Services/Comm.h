@@ -11,6 +11,12 @@ public:
     DECLARE_EVENT(BatteryReceivedEvent, Comm, float);
     BatteryReceivedEvent OnBatteryReceived{this};
 
+	/**
+	 * Triggered when vehicle detects that no camera is connected.
+	 */
+	DECLARE_EVENT(NoFeedReceivedEvent, Comm, bool);
+	NoFeedReceivedEvent OnNoFeedReceived{this};
+
 public:
     Comm() noexcept;
 

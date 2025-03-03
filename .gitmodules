@@ -4,3 +4,6 @@
 [submodule "components/Nevera-Common"]
 	path = components/Nevera-Common
 	url = git@github.com:CircuitMess/Nevera-Common.git
+[submodule "components/jpegdec"]
+	path = components/jpegdec
+	url = https://github.com/bitbank2/JPEGDEC.git

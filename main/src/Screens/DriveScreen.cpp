@@ -1,7 +1,10 @@
 #include "DriveScreen.h"
 #include <esp_random.h>
+#include "Memory/ObjectMemory.h"
 
 DriveScreen::DriveScreen(){
+	lastFrame.resize(160*120);
+
 	bar = new Bar();
 	addElement(bar);
 
@@ -10,6 +13,9 @@ DriveScreen::DriveScreen(){
 	addElement(spd);
 
 	startTime = millis();
+
+	feed = newObject<Feed>();
+
 }
 
 void DriveScreen::update(){
@@ -23,5 +29,16 @@ void DriveScreen::update(){
 }
 
 void DriveScreen::preRender(Sprite* canvas){
-	canvas->fillRect(0, 8, 128, 120, TFT_NAVY);
+	FeedFrame feedFrame;
+	feed->nextFrame([this, &feedFrame](const FeedFrame& info, const Color* frame){
+		feedFrame = info;
+
+		if(frame == nullptr){
+			return;
+		}
+
+		memcpy(lastFrame.data(), frame, 160 * 120 * 2);
+	});
+
+	canvas->pushImage(0, 0, 160, 120, lastFrame.data());
 }
