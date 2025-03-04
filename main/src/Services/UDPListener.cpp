@@ -1,4 +1,5 @@
 #include "UDPListener.h"
+#include "CommData.h"
 #include <Log/Log.h>
 #include <lwip/sockets.h>
 
@@ -13,8 +14,8 @@ UDPListener::UDPListener() noexcept {
 
     sockaddr_in addr{};
     addr.sin_family = AF_INET;
-    addr.sin_port = htons(6001);
-    inet_pton(AF_INET, "11.0.0.2", &addr.sin_addr);
+    addr.sin_port = htons(UDPPort);
+    inet_pton(AF_INET, ControllerIP, &addr.sin_addr);
     if(bind(socket, reinterpret_cast<sockaddr*>(&addr), sizeof(addr)) != 0){
         CMF_LOG(UDPListener, Error, "Can't bind address to socket, errno=%d: %s", errno, strerror(errno));
         socket = -1;
@@ -30,29 +31,7 @@ UDPListener::~UDPListener() noexcept {
 }
 
 size_t UDPListener::read(std::vector<uint8_t>& buffer) const noexcept {
-    if(socket == -1){
-        CMF_LOG(UDPListener, Error, "Read, but socket not set-up");
-        return -1;
-    }
-
-    if(buffer.empty()) {
-        return 0;
-    }
-
-    const int bytes = ::recv(socket, buffer.data(), buffer.size(), 0);
-    buffer.resize(bytes);
-
-    if(bytes < 0){
-        if(errno == EAGAIN || errno == EWOULDBLOCK) {
-            return 0;
-        }
-
-        CMF_LOG(UDPListener, Error, "Read error, errno=%d: %s", errno, strerror(errno));
-
-        return -1;
-    }
-
-    return bytes;
+   return read(buffer.data(), buffer.size());
 }
 
 size_t UDPListener::read(uint8_t* buffer, size_t count) const noexcept {

@@ -1,4 +1,5 @@
 #include "TCPServer.h"
+#include "CommData.h"
 #include <lwip/sockets.h>
 
 DEFINE_LOG(TCPServer);
@@ -12,11 +13,11 @@ TCPServer::TCPServer() noexcept {
 
     sockaddr_in address{};
     address.sin_family = AF_INET;
-    address.sin_port = htons(6000);
+    address.sin_port = htons(TCPPort);
 
-    inet_pton(AF_INET, "11.0.0.1", &address.sin_addr);
+    inet_pton(AF_INET, ControllerIP, &address.sin_addr);
 
-    if(bind(socket, reinterpret_cast<sockaddr*>(&address), sizeof(address)) != -0) {
+    if(bind(socket, reinterpret_cast<sockaddr*>(&address), sizeof(address)) != 0) {
         CMF_LOG(TCPServer, Error, "Failed to bind address to socket, errno=%d: %s", errno, strerror(errno));
         socket = -1;
         return;

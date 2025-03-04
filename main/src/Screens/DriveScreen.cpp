@@ -1,11 +1,14 @@
 #include "DriveScreen.h"
 #include "Services/Comm.h"
 #include <esp_random.h>
+#include "Memory/ObjectMemory.h"
 #include <Core/Application.h>
 #include <Services/ButtonInput.h>
 #include "Enum.h"
 
 DriveScreen::DriveScreen(){
+	lastFrame.resize(160*120);
+
 	bar = new Bar();
 	addElement(bar);
 
@@ -14,6 +17,8 @@ DriveScreen::DriveScreen(){
 	addElement(spd);
 
 	startTime = millis();
+
+	feed = newObject<Feed>();
 
 	auto input = getApp()->getService<ButtonInput>();
 	input->OnButtonEvent.bind(this, [this](Enum<int> btn, ButtonInput::Action action){
@@ -35,7 +40,6 @@ DriveScreen::DriveScreen(){
 			comm->sendDriveSpeed(boost);
 		}
 	});
-
 }
 
 void DriveScreen::update(){
@@ -49,7 +53,18 @@ void DriveScreen::update(){
 }
 
 void DriveScreen::preRender(Sprite* canvas){
-	canvas->fillRect(0, 8, 128, 120, TFT_NAVY);
+	FeedFrame feedFrame;
+	feed->nextFrame([this, &feedFrame](const FeedFrame& info, const Color* frame){
+		feedFrame = info;
+
+		if(frame == nullptr){
+			return;
+		}
+
+		memcpy(lastFrame.data(), frame, 160 * 120 * 2);
+	});
+
+	canvas->pushImage(0, 0, 160, 120, lastFrame.data());
 }
 
 int8_t DriveScreen::getDirection(){
