@@ -1,6 +1,8 @@
 #ifndef ENUM_H
 #define ENUM_H
 
+#include <Misc/Enum.h>
+
 DECLARE_ENUM(Button, Up, Down, Left, Right, Menu, Forward, Backward, Slider0, Slider1, Slider2, Slider3, Slider4);
 
 DECLARE_ENUM(LEDs, Slider0, Slider1, Slider2, Slider3, Slider4, Boost0, Boost1, BatteryFull, BatteryLow, Backlight);
