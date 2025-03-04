@@ -3,11 +3,10 @@
 #include <esp_random.h>
 #include "Memory/ObjectMemory.h"
 #include <Core/Application.h>
-#include <Services/ButtonInput.h>
 #include "Enum.h"
 
 DriveScreen::DriveScreen(){
-	lastFrame.resize(160*120);
+	lastFrame.resize(160 * 120);
 
 	bar = new Bar();
 	addElement(bar);
@@ -21,25 +20,26 @@ DriveScreen::DriveScreen(){
 	feed = newObject<Feed>();
 
 	auto input = getApp()->getService<ButtonInput>();
-	input->OnButtonEvent.bind(this, [this](Enum<int> btn, ButtonInput::Action action){
+	input->OnButtonEvent.bind(this, &DriveScreen::onButton);
+}
 
-		if(btn == Button::Left || btn == Button::Right){
-			const auto newDir = DriveScreen::getDirection();
-			if(newDir == dir) return;
+void DriveScreen::onButton(Enum<int> btn, ButtonInput::Action action){
+	if(btn == Button::Left || btn == Button::Right){
+		const auto newDir = DriveScreen::getDirection();
+		if(newDir == dir) return;
 
-			auto comm = getApp()->getService<Comm>();
-			dir = newDir;
-			comm->sendDriveDir(dir);
-		}else if(btn == Button::Slider0 || btn == Button::Slider1 || btn == Button::Slider2 || btn == Button::Slider3 || btn == Button::Slider4
-				 || btn == Button::Backward || btn == Button::Forward){
-			const auto newBoost = DriveScreen::getBoost();
-			if(newBoost == boost) return;
+		auto comm = getApp()->getService<Comm>();
+		dir = newDir;
+		comm->sendDriveDir(dir);
+	}else if(btn == Button::Slider0 || btn == Button::Slider1 || btn == Button::Slider2 || btn == Button::Slider3 || btn == Button::Slider4
+			 || btn == Button::Backward || btn == Button::Forward){
+		const auto newBoost = DriveScreen::getBoost();
+		if(newBoost == boost) return;
 
-			auto comm = getApp()->getService<Comm>();
-			boost = newBoost;
-			comm->sendDriveSpeed(boost);
-		}
-	});
+		auto comm = getApp()->getService<Comm>();
+		boost = newBoost;
+		comm->sendDriveSpeed(boost);
+	}
 }
 
 void DriveScreen::update(){
@@ -75,7 +75,6 @@ int8_t DriveScreen::getDirection(){
 	int8_t dir = (int8_t) (input->getState(Button::Right)) - (int8_t) (input->getState(Button::Left));
 	return dir;
 }
-
 
 /**
  * Boost buttons override and always set the maximum value (3 or -3)

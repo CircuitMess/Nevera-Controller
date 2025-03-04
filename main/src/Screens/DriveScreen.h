@@ -5,6 +5,7 @@
 #include "Drive/Bar.h"
 #include "Drive/Speed.h"
 #include "Services/Feed.h"
+#include <Services/ButtonInput.h>
 
 class DriveScreen : public Screen {
 	GENERATED_BODY(DriveScreen, Screen);
@@ -14,6 +15,8 @@ public:
 	DriveScreen();
 
 private:
+	void onButton(Enum<int> btn, ButtonInput::Action action);
+
 	void update() override;
 	void preRender(Sprite* canvas) override;
 
