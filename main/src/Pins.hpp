@@ -32,6 +32,8 @@
 #define BTN_RIGHT 36
 #define BTN_MENU 40
 
+#define LED_PWR 14
+
 //Slider touchpads are indexed the same as GPIOs
 #define SLIDER_0 2
 #define SLIDER_1 4

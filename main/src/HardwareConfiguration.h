@@ -6,6 +6,7 @@
 #include <Misc/Singleton.h>
 #include "Pins.hpp"
 #include <Drivers/Input/InputTouchGPIO.h>
+#include <Drivers/Output/OutputPWM.h>
 
 class HardwareConfiguration : public Singleton {
     GENERATED_BODY(HardwareConfiguration, Singleton)
@@ -17,6 +18,8 @@ public:
 	const std::vector<OutputPinDef>& getAW9523Outputs() const noexcept { return AW9523Outputs; }
 	const lgfx::Bus_SPI::config_t& getDisplayBusConfig() const noexcept { return DisplayBusConfig; }
 	const lgfx::Panel_Device::config_t& getDisplayPanelConfig() const noexcept { return DisplayPanelConfig; }
+
+	const std::vector<OutputPWMPinDef>& getPwmOutputs() const{ return PWMOutputs; }
 
 	const std::vector<TouchPinDef>& getTouchInputs() const{ return TouchInputs; }
 
@@ -49,6 +52,10 @@ private:
 			{ LED_BATTLOW,   false },
 			{ LED_BATTFULL,  false },
 			{ LED_BACKLIGHT, false }
+	};
+
+	const std::vector<OutputPWMPinDef> PWMOutputs = {
+			{{ 0, false }, (gpio_num_t) LED_PWR }
 	};
 
 	const lgfx::Bus_SPI::config_t DisplayBusConfig = {
