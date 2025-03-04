@@ -24,7 +24,7 @@
 #include <Services/LED/LED.h>
 #include <Services/LED/LEDFadeFunction.h>
 #include <Services/LED/LEDBlinkFunction.h>
-#include "Enum.h"
+#include "Enums.h"
 #include "Drivers/Input/InputTouchGPIO.h"
 
 class NeveraController : public Application {
