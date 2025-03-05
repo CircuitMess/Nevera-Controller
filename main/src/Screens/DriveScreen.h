@@ -5,6 +5,7 @@
 #include "Drive/Bar.h"
 #include "Drive/Speed.h"
 #include "Services/Feed.h"
+#include <Services/ButtonInput.h>
 
 class DriveScreen : public Screen {
 	GENERATED_BODY(DriveScreen, Screen);
@@ -14,6 +15,8 @@ public:
 	DriveScreen();
 
 private:
+	void onButton(Enum<int> btn, ButtonInput::Action action);
+
 	void update() override;
 	void preRender(Sprite* canvas) override;
 
@@ -26,6 +29,21 @@ private:
 
 	std::vector<Color> lastFrame;
 
+	/**
+	 * 	Direction encoding:
+	 * 	0 - forward, -1 - left, 1 - right
+	 */
+	static int8_t getDirection();
+
+	/**
+	 * 	Boost encoding:
+	 * 	max: 3, min: -3
+	 * 	0 - no movement
+	 */
+	static float getBoost();
+
+	int8_t dir = 0;
+	float boost = 0;
 };
 
 
