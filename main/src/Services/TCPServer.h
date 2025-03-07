@@ -3,6 +3,7 @@
 
 #include <Event/EventBroadcaster.h>
 #include <Object/Object.h>
+#include "WiFiAccessPoint.h"
 
 class TCPServer : public Object {
     GENERATED_BODY(TCPServer, Object)
@@ -31,6 +32,9 @@ public:
 private:
     int socket = -1;
     int client = -1;
+
+private:
+    void onAccessPointEvent(WiFiAccessPoint::EventType eventType);
 };
 
 #endif //NEVERA_TCPSERVER_H

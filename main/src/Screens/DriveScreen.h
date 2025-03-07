@@ -15,7 +15,8 @@ public:
 	DriveScreen();
 
 private:
-	void onButton(Enum<int> btn, ButtonInput::Action action);
+	void onButton(Enum<int> btn, ButtonInput::Action action) noexcept;
+	void onDisconnect() noexcept;
 
 	void update() override;
 	void preRender(Sprite* canvas) override;

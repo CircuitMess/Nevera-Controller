@@ -3,7 +3,9 @@
 #include <esp_random.h>
 #include "Memory/ObjectMemory.h"
 #include <Core/Application.h>
-#include "Enum.h"
+#include <Services/TCPServer.h>
+#include "Enums.h"
+#include "PairScreen.h"
 
 DriveScreen::DriveScreen(){
 	lastFrame.resize(160 * 120);
@@ -19,11 +21,27 @@ DriveScreen::DriveScreen(){
 
 	feed = newObject<Feed>();
 
-	auto input = getApp()->getService<ButtonInput>();
+	Application* app = getApp();
+	if(app == nullptr) {
+		return;
+	}
+
+	ButtonInput* input = app->getService<ButtonInput>();
+	if(input == nullptr) {
+		return;
+	}
+
 	input->OnButtonEvent.bind(this, &DriveScreen::onButton);
+
+	TCPServer* server = app->getService<TCPServer>();
+	if(server == nullptr) {
+		return;
+	}
+
+	server->OnDisconnected.bind(this, &DriveScreen::onDisconnect);
 }
 
-void DriveScreen::onButton(Enum<int> btn, ButtonInput::Action action){
+void DriveScreen::onButton(Enum<int> btn, ButtonInput::Action action) noexcept{
 	if(btn == Button::Left || btn == Button::Right){
 		const auto newDir = DriveScreen::getDirection();
 		if(newDir == dir) return;
@@ -40,6 +58,14 @@ void DriveScreen::onButton(Enum<int> btn, ButtonInput::Action action){
 		boost = newBoost;
 		comm->sendDriveSpeed(boost);
 	}
+}
+
+void DriveScreen::onDisconnect() noexcept {
+	if(transitionTo() != nullptr) {
+		return;
+	}
+
+	transition(PairScreen::staticClass());
 }
 
 void DriveScreen::update(){
