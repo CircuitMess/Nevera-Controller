@@ -4,23 +4,21 @@
 #include <esp_log.h>
 #include <mutex>
 #include <utility>
+#include <Core/Application.h>
 
 static const char* tag = "Feed";
 
 Feed::Feed() : dataAvailable(0){
-
 	rxBuf = newObject<RingBuffer>(this, RxBufSize);
-
-	udp = newObject<UDPListener>(this);
 
 	readBuf.resize(ReadBufSize);
 	for(auto& frameImg: frameImgs){
 		frameImg.resize(160 * 120);
 	}
 
-	readTask = newObject<Threaded>(this, [this](){ readLoop(); }, "FeedRead", 0, 4096, 5, 1);
+	readTask = newObject<Threaded>(this, [this](){ readLoop(); }, "FeedRead", 10, 4096, 5, 0);
 
-	decodeTask = newObject<Threaded>(this, [this](){ decodeLoop(); }, "FeedDecode", 0, 4096, 5, 1);
+	decodeTask = newObject<Threaded>(this, [this](){ decodeLoop(); }, "FeedDecode", 10, 4096, 8, 0);
 }
 
 Feed::~Feed(){
@@ -32,24 +30,19 @@ Feed::~Feed(){
 	}
 }
 
-void Feed::setPostProcCallback(std::function<void(const FeedFrame&, Color*)> callback){
-	postProcCallback = std::move(callback);
-}
-
-bool Feed::nextFrame(std::function<void(const FeedFrame& info, const Color* img)> cb){
+bool Feed::nextFrame(std::function<void(const Color* img)> cb){
 	std::unique_lock lock(readyFrameMut);
-	if(readyFrame.imgIndex == -1) return false;
+	if(readyFrame == -1) return false;
 
-	volatile int frameIndex = readyFrame.imgIndex;
+	volatile int frameIndex = readyFrame;
 	if(frameIndex == -1) return false;
 
-	volatile const FeedFrame info = readyFrame.info;
 	volatile const Color* img = frameImgs[frameIndex].data();
 
-	readyFrame.imgIndex = -1;
+	readyFrame = -1;
 	lock.unlock();
 
-	cb((const FeedFrame&) info, (const Color*) img);
+	cb((const Color*) img);
 
 	freeImgs[frameIndex] = true;
 
@@ -57,13 +50,21 @@ bool Feed::nextFrame(std::function<void(const FeedFrame& info, const Color* img)
 }
 
 void Feed::readLoop(){
-	int bytes = udp->read(readBuf.data(), readBuf.size());
-
-	if(bytes <= 0){
-		delayMillis(10);
+	Application* app = getApp();
+	if(app == nullptr) {
 		return;
 	}
 
+	const UDPListener* udp = app->getService<UDPListener>();
+	if(udp == nullptr) {
+		return;
+	}
+
+	const size_t bytes = udp->read(readBuf.data(), readBuf.size());
+
+	if(bytes <= 0){
+		return;
+	}
 
 	std::lock_guard lock(rxMut);
 	rxBuf->write(readBuf.data(), bytes);
@@ -125,17 +126,8 @@ void Feed::decodeLoop(){
 		return;
 	}
 
-	free(frame->data);
-	frame->data = nullptr;
-	frame->size = 0;
-
-	if(postProcCallback){
-		postProcCallback(*frame, imgBuf);
-	}
-
 	std::lock_guard frameLock(readyFrameMut);
-	readyFrame.info = *frame;
-	readyFrame.imgIndex = freeImg;
+	readyFrame = freeImg;
 }
 
 bool Feed::findFrame(){
@@ -230,7 +222,6 @@ bool Feed::findFrame(){
 }
 
 std::unique_ptr<FeedFrame> Feed::deserializeFrame(RingBuffer& buf, size_t size){
-
 	auto frame = std::make_unique<FeedFrame>();
 	frame->size = size;
 

@@ -79,10 +79,7 @@ void DriveScreen::update(){
 }
 
 void DriveScreen::preRender(Sprite* canvas){
-	FeedFrame feedFrame;
-	feed->nextFrame([this, &feedFrame](const FeedFrame& info, const Color* frame){
-		feedFrame = info;
-
+	feed->nextFrame([this](const Color* frame){
 		if(frame == nullptr){
 			return;
 		}

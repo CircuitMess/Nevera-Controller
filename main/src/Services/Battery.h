@@ -110,7 +110,7 @@ public:
 
 private:
 
-	static constexpr uint32_t MeasureIntverval = 100;
+	static constexpr uint32_t MeasureIntverval = 200;
 	static constexpr float VoltEmpty = 3700;
 
 	static constexpr float VoltFull = 4500;

@@ -3,7 +3,7 @@
 #include <CommData.h>
 #include "TCPServer.h"
 
-Comm::Comm() noexcept {
+Comm::Comm() noexcept : Super(20, 4 * 1024, 6, 1) {
     const Application* app = getApp();
     if(app == nullptr) {
         return;
@@ -74,7 +74,7 @@ TickType_t Comm::getEventScanningTime() const noexcept {
         return portMAX_DELAY;
     }
 
-    return 0;
+    return Super::getEventScanningTime();
 }
 
 void Comm::sendDriveDir(float dir) noexcept {
