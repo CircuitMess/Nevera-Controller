@@ -5,6 +5,18 @@
 DEFINE_LOG(TCPServer);
 
 TCPServer::TCPServer() noexcept {
+    Application* app = getApp();
+    if(app == nullptr) {
+        return;
+    }
+
+    WiFiAccessPoint* ap = app->getService<WiFiAccessPoint>();
+    if(ap == nullptr) {
+        return;
+    }
+
+    ap->OnConnectionEvent.bind(this, &TCPServer::onAccessPointEvent);
+
     socket = ::socket(AF_INET, SOCK_STREAM, IPPROTO_IP);
     if(socket == -1) {
         CMF_LOG(TCPServer, Error, "Failed to create socket, errno=%d: %s", errno, strerror(errno));
@@ -226,4 +238,16 @@ bool TCPServer::write(uint8_t* buffer, size_t count) noexcept {
     }
 
     return true;
+}
+
+void TCPServer::onAccessPointEvent(WiFiAccessPoint::EventType eventType) {
+    if(eventType != WiFiAccessPoint::EventType::Disconnect) {
+        return;
+    }
+
+    if(client == -1) {
+        return;
+    }
+
+    disconnect();
 }

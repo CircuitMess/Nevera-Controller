@@ -2,6 +2,10 @@
 #include "Services/Comm.h"
 #include <esp_random.h>
 #include "Memory/ObjectMemory.h"
+#include <Core/Application.h>
+#include <Services/TCPServer.h>
+#include "Enums.h"
+#include "PairScreen.h"
 #include <Services/LED/LED.h>
 
 DriveScreen::DriveScreen(){
@@ -18,11 +22,27 @@ DriveScreen::DriveScreen(){
 
 	feed = newObject<Feed>();
 
-	auto input = getApp()->getService<ButtonInput>();
+	Application* app = getApp();
+	if(app == nullptr) {
+		return;
+	}
+
+	ButtonInput* input = app->getService<ButtonInput>();
+	if(input == nullptr) {
+		return;
+	}
+
 	input->OnButtonEvent.bind(this, &DriveScreen::onButton);
+
+	TCPServer* server = app->getService<TCPServer>();
+	if(server == nullptr) {
+		return;
+	}
+
+	server->OnDisconnected.bind(this, &DriveScreen::onDisconnect);
 }
 
-void DriveScreen::onButton(Enum<int> btn, ButtonInput::Action action){
+void DriveScreen::onButton(Enum<int> btn, ButtonInput::Action action) noexcept{
 	//Not a control-related button event
 	if(!LEDMap.contains(btn)) return;
 
@@ -45,6 +65,14 @@ void DriveScreen::onButton(Enum<int> btn, ButtonInput::Action action){
 		boost = newBoost;
 		comm->sendDriveSpeed(boost);
 	}
+}
+
+void DriveScreen::onDisconnect() noexcept {
+	if(transitionTo() != nullptr) {
+		return;
+	}
+
+	transition(PairScreen::staticClass());
 }
 
 void DriveScreen::update(){
