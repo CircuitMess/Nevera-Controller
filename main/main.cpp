@@ -27,6 +27,7 @@
 #include "Enums.h"
 #include "Drivers/Input/InputTouchGPIO.h"
 #include <Drivers/Output/OutputPWM.h>
+#include "Services/BatteryIndicator.h"
 
 class NeveraController : public Application {
 	GENERATED_BODY(NeveraController, Application)
@@ -123,6 +124,8 @@ protected:
 		if(!SPIFFS::init()) {
 			return;
 		}
+
+		registerService<BatteryIndicator>(battery, ledService);
 
 		StateMachine* stateMachine = registerService<StateMachine>(0, 8 * 1024, 8, 0);
 		stateMachine->setStartingStateType(IntroScreen::staticClass());
