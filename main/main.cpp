@@ -31,6 +31,9 @@
 class NeveraController : public Application {
 	GENERATED_BODY(NeveraController, Application)
 
+public:
+	NeveraController() noexcept : Super(1000, 4 * 1024, 0, 0) {}
+
 protected:
 	virtual void begin() noexcept override {
 		Super::begin();
@@ -110,6 +113,7 @@ protected:
 		registerPeriphery<WiFi>();
 		registerService<WiFiAccessPoint>();
 		registerService<TCPServer>();
+		registerService<UDPListener>();
 		registerService<Comm>();
 
 		Battery* battery = registerService<Battery>(OutputPin{ outputGPIO, PIN_VREF });
@@ -120,13 +124,12 @@ protected:
 			return;
 		}
 
-		StateMachine* stateMachine = registerService<StateMachine>();
+		StateMachine* stateMachine = registerService<StateMachine>(0, 8 * 1024, 8, 0);
 		stateMachine->setStartingStateType(IntroScreen::staticClass());
 	}
 
 	virtual void tick(float deltaTime) noexcept override {
 		Super::tick(deltaTime);
-		vTaskDelay(portMAX_DELAY);
 	}
 
 	virtual void onDestroy() noexcept override {

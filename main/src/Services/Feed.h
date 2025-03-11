@@ -17,13 +17,10 @@ public:
 	Feed();
 	~Feed() override;
 
-	bool nextFrame(std::function<void(const FeedFrame& info, const Color* img)>);
-
-	void setPostProcCallback(std::function<void(const FeedFrame&, Color*)> callback);
+	bool nextFrame(std::function<void(const Color* img)>);
 
 private:
 	JPEGDEC jpeg{};
-	StrongObjectPtr<UDPListener> udp;
 
 	StrongObjectPtr<RingBuffer> rxBuf;
 	std::mutex rxMut;
@@ -43,15 +40,10 @@ private:
 	std::vector<Color> frameImgs[3];
 
 	std::mutex readyFrameMut;
-	struct {
-		FeedFrame info;
-		int imgIndex = -1;
-	} readyFrame;
+	int readyFrame = -1;
 
 	constexpr static size_t JpgMaxSize = 8000; //upper size limit for JPG quality 30 on 160x120 resolution
 	constexpr static size_t RxBufSize = 3 * (sizeof(FeedFrame) + JpgMaxSize);
-
-	std::function<void(const FeedFrame&, Color* frame)> postProcCallback;
 
 	static std::unique_ptr<FeedFrame> deserializeFrame(RingBuffer& buf, size_t size);
 };
