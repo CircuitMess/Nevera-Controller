@@ -26,6 +26,8 @@
 #include <Services/LED/LEDBlinkFunction.h>
 #include "Enums.h"
 #include "Drivers/Input/InputTouchGPIO.h"
+#include <Drivers/Output/OutputPWM.h>
+#include "Services/BatteryIndicator.h"
 
 class NeveraController : public Application {
 	GENERATED_BODY(NeveraController, Application)
@@ -81,8 +83,7 @@ protected:
 			outputCurrAW->write(out.port, false);
 		}
 
-		outputCurrAW->write(LED_BACKLIGHT, true);
-
+		OutputPWM* outputPWM = registerDriver<OutputPWM>(config->getPwmOutputs());
 
 		Display* display = registerDevice<Display>(config->getDisplayBusConfig(), config->getDisplayPanelConfig(), [](Sprite& canvas){
 							canvas.setColorDepth(lgfx::rgb565_2Byte);
@@ -100,10 +101,15 @@ protected:
 				{ LEDs::Boost0,      { outputCurrAW, LED_BOOST0 }},
 				{ LEDs::Boost1,      { outputCurrAW, LED_BOOST1 }},
 				{ LEDs::BatteryLow,  { outputCurrAW, LED_BATTLOW }},
-				{ LEDs::BatteryFull, { outputCurrAW, LED_BATTFULL }}
+				{ LEDs::BatteryFull, { outputCurrAW, LED_BATTFULL }},
+				{ LEDs::Backlight,   { outputCurrAW, LED_BACKLIGHT }},
+				{ LEDs::Power,       { outputPWM, 0 }}
 		};
 		LED<LEDs, RGB_LEDs>* ledService = registerService<LED<LEDs, RGB_LEDs>>();
 		ledService->reg(ledPins);
+
+		ledService->on(LEDs::Backlight, 1.0f);
+		ledService->on(LEDs::Power, 0.03f);
 
 		registerPeriphery<WiFi>();
 		registerService<WiFiAccessPoint>();
@@ -118,6 +124,8 @@ protected:
 		if(!SPIFFS::init()) {
 			return;
 		}
+
+		registerService<BatteryIndicator>(battery, ledService);
 
 		StateMachine* stateMachine = registerService<StateMachine>(0, 8 * 1024, 8, 0);
 		stateMachine->setStartingStateType(IntroScreen::staticClass());

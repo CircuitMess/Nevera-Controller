@@ -6,6 +6,7 @@
 #include "Drive/Speed.h"
 #include "Services/Feed.h"
 #include <Services/ButtonInput.h>
+#include "Enums.h"
 
 class DriveScreen : public Screen {
 	GENERATED_BODY(DriveScreen, Screen);
@@ -45,6 +46,18 @@ private:
 
 	int8_t dir = 0;
 	float boost = 0;
+
+	const std::unordered_map<int, LEDs> LEDMap = {
+			{ Button::Forward, LEDs::Boost0 },
+			{ Button::Backward, LEDs::Boost1 },
+			{ Button::Slider0, LEDs::Slider0 },
+			{ Button::Slider1, LEDs::Slider1 },
+			{ Button::Slider2, LEDs::Slider2 },
+			{ Button::Slider3, LEDs::Slider3 },
+			{ Button::Slider4, LEDs::Slider4 },
+	};
+
+	static constexpr float MaxBrightness = 0.1f;
 };
 
 

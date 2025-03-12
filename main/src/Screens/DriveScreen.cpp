@@ -6,6 +6,7 @@
 #include <Services/TCPServer.h>
 #include "Enums.h"
 #include "PairScreen.h"
+#include <Services/LED/LED.h>
 
 DriveScreen::DriveScreen(){
 	lastFrame.resize(160 * 120);
@@ -42,6 +43,12 @@ DriveScreen::DriveScreen(){
 }
 
 void DriveScreen::onButton(Enum<int> btn, ButtonInput::Action action) noexcept{
+	//Not a control-related button event
+	if(!LEDMap.contains(btn)) return;
+
+	auto leds = getApp()->getService<LED<LEDs, RGB_LEDs>>();
+	leds->on(LEDMap.at(btn), action == ButtonInput::Action::Press ? MaxBrightness : 0);
+
 	if(btn == Button::Left || btn == Button::Right){
 		const auto newDir = DriveScreen::getDirection();
 		if(newDir == dir) return;
