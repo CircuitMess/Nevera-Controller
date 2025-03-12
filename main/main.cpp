@@ -31,7 +31,7 @@ class NeveraController : public Application {
 	GENERATED_BODY(NeveraController, Application)
 
 public:
-	NeveraController() noexcept : Super(1000, 4 * 1024, 0, 0) {}
+	NeveraController() noexcept : Super(1000, 6 * 1024, 8, 0) {}
 
 protected:
 	virtual void begin() noexcept override {

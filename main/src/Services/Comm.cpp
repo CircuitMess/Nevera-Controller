@@ -1,20 +1,10 @@
 #include "Comm.h"
 #include <Memory/ObjectMemory.h>
-#include <CommData.h>
 #include "TCPServer.h"
 
-Comm::Comm() noexcept : Super(20, 4 * 1024, 6, 1) {
-    const Application* app = getApp();
-    if(app == nullptr) {
-        return;
-    }
-
-    TCPServer* tcp = app->getService<TCPServer>();
-    if(tcp == nullptr) {
-        return;
-    }
-
-    tcp->OnConnected.bind(this, &Comm::onTCPConnected);
+Comm::Comm() noexcept : Super(20, 4 * 1024, 8) {
+    data = newObject<CommData>(this);
+    sendData = newObject<CommData>(this);
 }
 
 void Comm::tick(float deltaTime) noexcept {
@@ -47,8 +37,7 @@ void Comm::tick(float deltaTime) noexcept {
         return;
     }
 
-    StrongObjectPtr<CommData> data = objectFromByteArray<CommData>(buffer, this);
-    if(!data.isValid()) {
+    if(!objectFromByteArray<CommData>(data.get(), buffer)) {
         return;
     }
 
@@ -59,38 +48,18 @@ void Comm::tick(float deltaTime) noexcept {
 	}
 }
 
-TickType_t Comm::getEventScanningTime() const noexcept {
-    const Application* app = getApp();
-    if(app == nullptr) {
-        return portMAX_DELAY;
-    }
-
-    const TCPServer* tcp = app->getService<TCPServer>();
-    if(tcp == nullptr) {
-        return portMAX_DELAY;
-    }
-
-    if(tcp->isConnected()) {
-        return portMAX_DELAY;
-    }
-
-    return Super::getEventScanningTime();
-}
-
 void Comm::sendDriveDir(float dir) noexcept {
-    StrongObjectPtr<CommData> driveData = newObject<CommData>(this);
-    driveData->dataType = CommData::DataType::Direction;
-    driveData->value = dir;
+    sendData->dataType = CommData::DataType::Direction;
+    sendData->value = dir;
 
-    sendPacket(driveData.get());
+    sendPacket(sendData.get());
 }
 
 void Comm::sendDriveSpeed(float speed) noexcept {
-    StrongObjectPtr<CommData> driveData = newObject<CommData>(this);
-    driveData->dataType = CommData::DataType::Speed;
-    driveData->value = speed;
+    sendData->dataType = CommData::DataType::Speed;
+    sendData->value = speed;
 
-    sendPacket(driveData.get());
+    sendPacket(sendData.get());
 }
 
 void Comm::sendPacket(Object *object) noexcept {
@@ -118,8 +87,4 @@ void Comm::sendPacket(Object *object) noexcept {
 
     tcp->write(sizeData);
     tcp->write(data);
-}
-
-void Comm::onTCPConnected() noexcept {
-
 }
