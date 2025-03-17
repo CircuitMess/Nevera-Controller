@@ -101,7 +101,7 @@ public:
 		Critical = 0, VeryLow, Low, Mid, High, VeryHigh, Full, COUNT
 	};
 	DECLARE_EVENT(BatteryEvent, Battery, Level);
-	BatteryEvent OnLLevelChanged{ this };
+	BatteryEvent OnLevelChanged{ this };
 
 	bool isShutdown() const;
 

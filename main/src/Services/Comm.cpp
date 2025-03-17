@@ -2,7 +2,7 @@
 #include <Memory/ObjectMemory.h>
 #include "TCPServer.h"
 
-Comm::Comm() noexcept : Super(20, 4 * 1024, 8) {
+Comm::Comm() noexcept : Super(0, 4 * 1024, 8) {
     data = newObject<CommData>(this);
     sendData = newObject<CommData>(this);
 }
@@ -17,15 +17,18 @@ void Comm::tick(float deltaTime) noexcept {
 
     TCPServer* tcp = app->getService<TCPServer>();
     if(tcp == nullptr) {
+        vTaskDelay(100);
         return;
     }
 
     if(!tcp->isConnected()) {
+        vTaskDelay(100);
         return;
     }
 
     std::vector<uint8_t> buffer(sizeof(size_t));
     if(!tcp->read(buffer)) {
+        vTaskDelay(100);
         return;
     }
 
@@ -45,6 +48,8 @@ void Comm::tick(float deltaTime) noexcept {
         OnBatteryReceived.broadcast(data->value);
     }else if(data->dataType == CommData::DataType::NoFeed){
 		OnNoFeedReceived.broadcast(data->value);
+	}else if(data->dataType == CommData::DataType::Connection) {
+	    OnConnectionReceived.broadcast(data->value);
 	}
 }
 

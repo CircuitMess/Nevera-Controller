@@ -18,6 +18,9 @@ public:
 	DECLARE_EVENT(NoFeedReceivedEvent, Comm, bool);
 	NoFeedReceivedEvent OnNoFeedReceived{this};
 
+    DECLARE_EVENT(ConnectionReceivedEvent, Comm, float);
+    ConnectionReceivedEvent OnConnectionReceived{this};
+
 public:
     Comm() noexcept;
 

@@ -13,7 +13,7 @@ BatteryIndicator::BatteryIndicator(StrongObjectPtr<Battery> battery, StrongObjec
 	//Called for initial setup
 	batteryChangeOccurred(battery->getLevel());
 
-	battery->OnLLevelChanged.bind(this, &BatteryIndicator::batteryChangeOccurred);
+	battery->OnLevelChanged.bind(this, &BatteryIndicator::batteryChangeOccurred);
 }
 
 void BatteryIndicator::batteryChangeOccurred(Battery::Level level){

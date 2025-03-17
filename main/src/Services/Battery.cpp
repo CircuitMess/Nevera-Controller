@@ -83,7 +83,7 @@ void Battery::sample(bool fresh){
 
 
 	if(oldLevel != getLevel() || fresh){
-		OnLLevelChanged.broadcast(getLevel());
+		OnLevelChanged.broadcast(getLevel());
 	}
 
 	if(getLevel() == Level::Critical){
