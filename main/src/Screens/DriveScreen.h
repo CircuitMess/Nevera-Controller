@@ -1,6 +1,7 @@
 #ifndef NEVERA_CONTROLLER_DRIVESCREEN_H
 #define NEVERA_CONTROLLER_DRIVESCREEN_H
 
+#include <Services/Battery.h>
 #include "UI/Screen.h"
 #include "Drive/Bar.h"
 #include "Drive/Speed.h"
@@ -19,13 +20,14 @@ private:
 	void onButton(Enum<int> btn, ButtonInput::Action action) noexcept;
 	void onDisconnect() noexcept;
 
-	void update() override;
 	void preRender(Sprite* canvas) override;
+
+	void onBatteryLevelChanged(Battery::Level level) noexcept;
+	void onCarBatteryLevelReceived(float level) noexcept;
+	void onCarConnectionReceived(float level) noexcept;
 
 	Bar* bar;
 	Speed* spd;
-
-	uint64_t startTime; // TODO: only used for elements demoing
 
 	StrongObjectPtr<Feed> feed;
 
@@ -33,9 +35,9 @@ private:
 
 	/**
 	 * 	Direction encoding:
-	 * 	0 - forward, -1 - left, 1 - right
+	 * 	0 - forward, 1 - left, -1 - right
 	 */
-	static int8_t getDirection();
+	static float getDirection();
 
 	/**
 	 * 	Boost encoding:
@@ -44,7 +46,7 @@ private:
 	 */
 	static float getBoost();
 
-	int8_t dir = 0;
+	float dir = 0;
 	float boost = 0;
 
 	const std::unordered_map<int, LEDs> LEDMap = {

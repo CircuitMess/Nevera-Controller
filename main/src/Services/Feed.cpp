@@ -13,7 +13,7 @@ Feed::Feed() : dataAvailable(0){
 
 	readBuf.resize(ReadBufSize);
 	for(auto& frameImg: frameImgs){
-		frameImg.resize(160 * 120);
+		frameImg.resize(128 * 128);
 	}
 
 	readTask = newObject<Threaded>(this, [this](){ readLoop(); }, "FeedRead", 10, 4096, 5, 0);
@@ -110,7 +110,7 @@ void Feed::decodeLoop(){
 
 	jpeg.openRAM((uint8_t*) (frame->data), frame->size, [](JPEGDRAW* data) -> int{
 		for(int y = data->y, iy = 0; y < data->y + data->iHeight; y++, iy++){
-			size_t offset = y * 160 + data->x;
+			size_t offset = y * 128 + data->x;
 			size_t ioffset = iy * data->iWidth;
 			memcpy((uint8_t*) data->pUser + offset * 2, (uint8_t*) data->pPixels + ioffset * 2, data->iWidth * 2);
 		}
