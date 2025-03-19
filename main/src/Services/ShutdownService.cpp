@@ -6,8 +6,7 @@
 
 SemaphoreHandle_t ShutdownService::shutdownSem = xSemaphoreCreateBinary();
 
-ShutdownService::ShutdownService() : AsyncEntity(Timeout, 3 * 1024, 10, -1){
-
+ShutdownService::ShutdownService() : Super(Timeout, 3 * 1024, 10, -1){
 	inactivitySem = xSemaphoreCreateBinary();
 	xSemaphoreGive(inactivitySem);
 
@@ -15,15 +14,13 @@ ShutdownService::ShutdownService() : AsyncEntity(Timeout, 3 * 1024, 10, -1){
 
 	auto buttonInput = getApp()->getService<ButtonInput>();
 	buttonInput->OnButtonEvent.bind(this, &ShutdownService::inputEvent);
-
 }
 
 void ShutdownService::shutdown(ShutdownReason reason){
 	xSemaphoreTake(shutdownSem, portMAX_DELAY);
 	auto app = getApp();
 
-	auto leds = app->getService < LED < LEDs, RGB_LEDs>>();
-
+	auto leds = app->getService<LED<LEDs, RGB_LEDs>>();
 
 	//Fade out - LEDFadeFunction couldn't be used since it provides periodic breathing effect
 	for(uint8_t i = 100; i > 0; i--){
@@ -47,11 +44,14 @@ void ShutdownService::tick(float deltaTime) noexcept{
 	Super::tick(deltaTime);
 
 	if(xSemaphoreTake(inactivitySem, 0) == pdFALSE){
+		TRACE_LOG("");
 		//Semaphore not given in the last 'Timeout' milliseconds by the inputEvent callback.
 		shutdown(ShutdownReason::Inactivity);
 	}
 }
 
 void ShutdownService::inputEvent(Enum<int> btn, ButtonInput::Action action){
+	TRACE_LOG("");
+
 	xSemaphoreGive(inactivitySem);
 }
