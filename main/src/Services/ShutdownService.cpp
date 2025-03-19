@@ -51,7 +51,5 @@ void ShutdownService::tick(float deltaTime) noexcept{
 }
 
 void ShutdownService::inputEvent(Enum<int> btn, ButtonInput::Action action){
-	TRACE_LOG("");
-
 	xSemaphoreGive(inactivitySem);
 }
