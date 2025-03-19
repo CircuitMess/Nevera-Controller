@@ -29,15 +29,13 @@ private:
 	Bar* bar;
 	Speed* spd;
 
-	uint64_t startTime; // TODO: only used for elements demoing
-
 	StrongObjectPtr<Feed> feed;
 
 	std::vector<Color> lastFrame;
 
 	/**
 	 * 	Direction encoding:
-	 * 	0 - forward, -1 - left, 1 - right
+	 * 	0 - forward, 1 - left, -1 - right
 	 */
 	static float getDirection();
 

@@ -9,7 +9,7 @@
 #include <Services/LED/LED.h>
 
 DriveScreen::DriveScreen(){
-	lastFrame.resize(160 * 120);
+	lastFrame.resize(128 * 128);
 
 	bar = new Bar();
 	addElement(bar);
@@ -17,8 +17,6 @@ DriveScreen::DriveScreen(){
 	spd = new Speed();
 	spd->setPos(116, 13);
 	addElement(spd);
-
-	startTime = millis();
 
 	feed = newObject<Feed>();
 
@@ -73,7 +71,10 @@ void DriveScreen::onButton(Enum<int> btn, ButtonInput::Action action) noexcept{
 
 		auto comm = getApp()->getService<Comm>();
 		boost = newBoost;
-		comm->sendDriveSpeed(boost);
+
+		comm->sendDriveSpeed((boost / 3.0f) * 100.0f);
+
+		spd->setLevel(glm::abs((boost / 3.0f) * 100.0f));
 	}
 
 	//Not a LED-related button event
