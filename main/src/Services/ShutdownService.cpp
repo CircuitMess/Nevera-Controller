@@ -44,7 +44,6 @@ void ShutdownService::tick(float deltaTime) noexcept{
 	Super::tick(deltaTime);
 
 	if(xSemaphoreTake(inactivitySem, 0) == pdFALSE){
-		TRACE_LOG("");
 		//Semaphore not given in the last 'Timeout' milliseconds by the inputEvent callback.
 		shutdown(ShutdownReason::Inactivity);
 	}

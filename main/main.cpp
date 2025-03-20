@@ -122,6 +122,8 @@ protected:
 
 		battery->begin();
 
+		battery->OnLevelChanged.bind(this, &NeveraController::onBatteryChange);
+
 		if(!SPIFFS::init()) {
 			return;
 		}
@@ -140,6 +142,16 @@ protected:
 
 	virtual void onDestroy() noexcept override {
 		Super::onDestroy();
+	}
+
+private:
+	void onBatteryChange(Battery::Level level) {
+		if(level != Battery::Level::Critical) {
+			return;
+		}
+
+		ShutdownService::shutdown(ShutdownReason::Battery);
+		vTaskDelay(portMAX_DELAY);
 	}
 };
 
