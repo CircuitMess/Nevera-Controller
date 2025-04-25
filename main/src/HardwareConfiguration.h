@@ -51,11 +51,11 @@ private:
 			{ LED_SLIDER1,   false },
 			{ LED_BATTLOW,   false },
 			{ LED_BATTFULL,  false },
-			{ LED_BACKLIGHT, false }
 	};
 
 	const std::vector<OutputPWMPinDef> PWMOutputs = {
-			{{ 0, false }, (gpio_num_t) LED_PWR }
+			{{ 0, false }, (gpio_num_t) LED_PWR },
+			{{ 1, false }, (gpio_num_t) LED_BACKLIGHT }
 	};
 
 	const lgfx::Bus_SPI::config_t DisplayBusConfig = {

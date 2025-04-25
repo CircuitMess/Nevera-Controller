@@ -78,7 +78,6 @@ protected:
 		AW9523* aw9523 = registerDevice<AW9523>(i2c, config->getAW9523Address());
 		aw9523->setCurrentLimit(AW9523::IMAX);
 
-
 		OutputCurrAW* outputCurrAW = registerService<OutputCurrAW>(config->getAW9523Outputs(), aw9523);
 		for(const auto out: config->getAW9523Outputs()){
 			outputCurrAW->write(out.port, false);
@@ -103,8 +102,8 @@ protected:
 				{ LEDs::Boost1,      { outputCurrAW, LED_BOOST1 }},
 				{ LEDs::BatteryLow,  { outputCurrAW, LED_BATTLOW }},
 				{ LEDs::BatteryFull, { outputCurrAW, LED_BATTFULL }},
-				{ LEDs::Backlight,   { outputCurrAW, LED_BACKLIGHT }},
-				{ LEDs::Power,       { outputPWM, 0 }}
+				{ LEDs::Backlight,   { outputPWM, LED_BACKLIGHT }},
+				{ LEDs::Power,       { outputPWM, LED_PWR }}
 		};
 		LED<LEDs, RGB_LEDs>* ledService = registerService<LED<LEDs, RGB_LEDs>>();
 		ledService->reg(ledPins);
