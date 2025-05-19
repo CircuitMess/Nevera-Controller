@@ -1,4 +1,5 @@
 #include "ShutdownService.h"
+#include "Pins.hpp"
 #include "Services/Audio/Audio.h"
 #include "Enums.h"
 #include "Drivers/Output/OutputGPIO.h"
@@ -23,7 +24,7 @@ void ShutdownService::shutdown(ShutdownReason reason){
 	auto leds = app->getService<LED<LEDs, RGB_LEDs>>();
 
 	//Fade out - LEDFadeFunction couldn't be used since it provides periodic breathing effect
-	for(uint8_t i = 100; i > 0; i--){
+	for(int8_t i = 100; i >= 0; i--){
 		leds->on(LEDs::Backlight, (float) i / 100.0f);
 		delayMillis(1);
 	}
@@ -31,6 +32,14 @@ void ShutdownService::shutdown(ShutdownReason reason){
 	for(int i = 0; i < (uint8_t) LEDs::COUNT; i++){
 		leds->off((LEDs) i);
 	}
+
+	if(GPIOPeriph* gpio = app->getPeriphery<GPIOPeriph>()) {
+		gpio->setMode(static_cast<gpio_num_t>(LED_BACKLIGHT), GPIOMode::Output);
+		gpio->write(static_cast<gpio_num_t>(LED_BACKLIGHT), true);
+		gpio_hold_en(static_cast<gpio_num_t>(LED_BACKLIGHT));
+	}
+
+	gpio_deep_sleep_hold_en();
 
 	ESP_ERROR_CHECK(esp_sleep_pd_config(ESP_PD_DOMAIN_RTC_PERIPH, ESP_PD_OPTION_AUTO));
 	ESP_ERROR_CHECK(esp_sleep_pd_config(ESP_PD_DOMAIN_RC_FAST, ESP_PD_OPTION_AUTO));
