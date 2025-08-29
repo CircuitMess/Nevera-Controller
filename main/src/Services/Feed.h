@@ -9,6 +9,8 @@
 #include <semaphore>
 #include <atomic>
 
+// TODO we need a Feed for jpg and one for raw img data
+
 class Feed : public Object {
 	GENERATED_BODY(Feed, Object)
 
