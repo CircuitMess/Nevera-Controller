@@ -131,7 +131,7 @@ protected:
 
 		registerService<ShutdownService>();
 
-		StateMachine* stateMachine = registerService<StateMachine>(0, 8 * 1024, 8, 0);
+		StateMachine* stateMachine = registerService<StateMachine>(10, 8 * 1024, 8, 0);
 		stateMachine->setStartingStateType(IntroScreen::staticClass());
 	}
 

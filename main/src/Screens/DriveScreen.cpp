@@ -1,12 +1,12 @@
 #include "DriveScreen.h"
-#include "Services/Comm.h"
 #include <esp_random.h>
-#include "Memory/ObjectMemory.h"
+#include <Memory/ObjectMemory.h>
 #include <Core/Application.h>
 #include <Services/TCPServer.h>
+#include <Services/LED/LED.h>
 #include "Enums.h"
 #include "PairScreen.h"
-#include <Services/LED/LED.h>
+#include "Services/Comm.h"
 
 DriveScreen::DriveScreen(){
 	lastFrame.resize(128 * 128);
