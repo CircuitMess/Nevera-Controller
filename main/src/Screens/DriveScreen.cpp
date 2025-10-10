@@ -58,7 +58,7 @@ DriveScreen::DriveScreen(){
 
 void DriveScreen::onButton(Enum<int> btn, ButtonInput::Action action) noexcept{
 	if(btn == Button::Left || btn == Button::Right){
-		const float newDir = DriveScreen::getDirection();
+		const float newDir = getDirection();
 		if(newDir == dir) return;
 
 		auto comm = getApp()->getService<Comm>();
@@ -66,7 +66,7 @@ void DriveScreen::onButton(Enum<int> btn, ButtonInput::Action action) noexcept{
 		comm->sendDriveDir(dir);
 	}else if(btn == Button::Slider0 || btn == Button::Slider1 || btn == Button::Slider2 || btn == Button::Slider3 || btn == Button::Slider4
 			 || btn == Button::Backward || btn == Button::Forward){
-		const auto newBoost = DriveScreen::getBoost();
+		const auto newBoost = getBoost();
 		if(newBoost == boost) return;
 
 		auto comm = getApp()->getService<Comm>();
@@ -77,10 +77,41 @@ void DriveScreen::onButton(Enum<int> btn, ButtonInput::Action action) noexcept{
 		spd->setLevel(glm::abs((boost / 3.0f) * 100.0f));
 	}
 
-	//Not a LED-related button event
-	if(!LEDMap.contains(btn)) return;
+	LED<LEDs, RGB_LEDs>* leds = getApp()->getService<LED<LEDs, RGB_LEDs>>();
+	if(leds == nullptr){
+		return;
+	}
 
-	auto leds = getApp()->getService<LED<LEDs, RGB_LEDs>>();
+	leds->off(LEDs::Slider0);
+	leds->off(LEDs::Slider1);
+	leds->off(LEDs::Slider2);
+	leds->off(LEDs::Slider3);
+	leds->off(LEDs::Slider4);
+
+	if(std::abs(boost) >= 0.25f){
+		leds->on(LEDs::Slider2, MaxBrightness);
+	}
+
+	if(boost >= 0.75f){
+		leds->on(LEDs::Slider1, MaxBrightness);
+	}
+
+	if(boost >= 1.25f){
+		leds->on(LEDs::Slider0, MaxBrightness);
+	}
+
+	if(boost <= -0.75){
+		leds->on(LEDs::Slider3, MaxBrightness);
+	}
+
+	if(boost <= -1.25){
+		leds->on(LEDs::Slider4, MaxBrightness);
+	}
+
+	if(!LEDMap.contains(btn)){
+		return;
+	}
+
 	leds->on(LEDMap.at(btn), action == ButtonInput::Action::Press ? MaxBrightness : 0);
 }
 

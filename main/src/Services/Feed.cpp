@@ -16,9 +16,9 @@ Feed::Feed() : dataAvailable(0){
 		frameImg.resize(128 * 128);
 	}
 
-	readTask = newObject<Threaded>(this, [this](){ readLoop(); }, "FeedRead", 10, 4096, 8, 0);
+	readTask = newObject<Threaded>(this, [this](){ readLoop(); }, "FeedRead", 10, 4096, 6, 1);
 
-	decodeTask = newObject<Threaded>(this, [this](){ decodeLoop(); }, "FeedDecode", 10, 4096, 8, 0);
+	decodeTask = newObject<Threaded>(this, [this](){ decodeLoop(); }, "FeedDecode", 10, 4096, 6, 0);
 }
 
 Feed::~Feed(){

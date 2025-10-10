@@ -2,7 +2,7 @@
 #include <Memory/ObjectMemory.h>
 #include "TCPServer.h"
 
-Comm::Comm() noexcept : Super(15, 4 * 1024, 10, -1) {
+Comm::Comm() noexcept : Super(15, 4 * 1024, 8, -1) {
     data = newObject<CommData>(this);
     sendData = newObject<CommData>(this);
 }
