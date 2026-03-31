@@ -8,7 +8,7 @@
 #include <cmath>
 
 class BatteryIndicator : public Object {
-	GENERATED_BODY(BatteryIndicator, Object)
+	GENERATED_BODY(BatteryIndicator, Object, CONSTRUCTOR_PACK(StrongObjectPtr<Battery>, StrongObjectPtr<LED<LEDs, RGB_LEDs>>))
 public:
 	BatteryIndicator(StrongObjectPtr<Battery> battery = nullptr, StrongObjectPtr<LED<LEDs, RGB_LEDs>> leds = nullptr);
 

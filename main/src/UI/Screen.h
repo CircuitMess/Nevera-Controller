@@ -7,7 +7,7 @@
 #include <unordered_set>
 
 class Screen : public State {
-	GENERATED_BODY(Screen, State);
+	GENERATED_BODY(Screen, State, void)
 
 public:
 	~Screen() override;

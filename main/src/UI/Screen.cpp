@@ -1,5 +1,6 @@
 #include "Screen.h"
 #include <Core/Application.h>
+#include <Util/stdafx.h>
 
 Screen::~Screen(){
 	for(auto* el : elements){

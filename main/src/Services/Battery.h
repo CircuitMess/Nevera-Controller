@@ -1,6 +1,8 @@
 #ifndef NEVERA_CONTROLLER_BATTERY_H
 #define NEVERA_CONTROLLER_BATTERY_H
 
+#include <Object/Class.h>
+#include <Object/Object.h>
 #include <hal/gpio_types.h>
 #include <atomic>
 #include <Entity/AsyncEntity.h>
@@ -17,7 +19,7 @@
  * Useful for converting from voltage divider output to actual source voltage.
  */
 class FactorOffset_ADCFilter : public ADCFilter {
-	GENERATED_BODY(FactorOffset_ADCFilter, ADCFilter)
+	GENERATED_BODY(FactorOffset_ADCFilter, ADCFilter, CONSTRUCTOR_PACK(float, float))
 public:
 	FactorOffset_ADCFilter(float factor = 1.f, float offset = 0.f) : factor(factor), offset(offset){
 
@@ -52,7 +54,7 @@ private:
  * Converts value from specified range to [0.0 - 100.0]
  */
 class Remap_ADCFilter : public ADCFilter {
-	GENERATED_BODY(Remap_ADCFilter, ADCFilter);
+	GENERATED_BODY(Remap_ADCFilter, ADCFilter, CONSTRUCTOR_PACK(float, float))
 public:
 	Remap_ADCFilter(float min = 0, float max = 0) : min(min), max(max){
 
@@ -71,7 +73,7 @@ private:
 };
 
 class Composite_ADCFilter : public ADCFilter {
-	GENERATED_BODY(Composite_ADCFilter, ADCFilter)
+	GENERATED_BODY(Composite_ADCFilter, ADCFilter, CONSTRUCTOR_PACK(std::vector<StrongObjectPtr<ADCFilter>>))
 public:
 	Composite_ADCFilter(std::vector<StrongObjectPtr<ADCFilter>> filters = {}) : filters(filters){
 
@@ -91,7 +93,8 @@ private:
 
 
 class Battery : public Object {
-	GENERATED_BODY(Battery, Object)
+	GENERATED_BODY(Battery, Object, CONSTRUCTOR_PACK(OutputPin))
+
 public:
 	Battery(OutputPin refSwitch = {});
 

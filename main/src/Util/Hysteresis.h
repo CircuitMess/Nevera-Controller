@@ -2,11 +2,12 @@
 #define NEVERA_FIRMWARE_HYSTERESIS_H
 
 #include <Object/Object.h>
+#include <Object/Class.h>
 #include <initializer_list>
 #include <vector>
 
 class Hysteresis : public Object{
-	GENERATED_BODY(Hysteresis, Object);
+	GENERATED_BODY(Hysteresis, Object, CONSTRUCTOR_PACK(std::initializer_list<int>, int));
 public:
 	/**
 	 * @param thresholds Ordered low to high. Should include min and max values

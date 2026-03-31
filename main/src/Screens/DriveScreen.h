@@ -10,13 +10,15 @@
 #include "Enums.h"
 
 class DriveScreen : public Screen {
-	GENERATED_BODY(DriveScreen, Screen);
+	GENERATED_BODY(DriveScreen, Screen, void)
 	typedef uint16_t Color;
 
 public:
 	DriveScreen();
 
 private:
+	virtual void onTransitionTo(const Class* next) noexcept override;
+
 	void onButton(Enum<int> btn, ButtonInput::Action action) noexcept;
 	void onDisconnect() noexcept;
 
@@ -28,8 +30,6 @@ private:
 
 	Bar* bar;
 	Speed* spd;
-
-	StrongObjectPtr<Feed> feed;
 
 	std::vector<Color> lastFrame;
 

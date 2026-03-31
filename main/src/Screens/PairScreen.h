@@ -7,7 +7,7 @@
 #include <glm.hpp>
 
 class PairScreen : public Screen {
-	GENERATED_BODY(PairScreen, Screen);
+	GENERATED_BODY(PairScreen, Screen, void)
 
 public:
 	PairScreen();

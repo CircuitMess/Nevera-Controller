@@ -5,7 +5,7 @@
 #include <Object/Object.h>
 
 class WiFiAccessPoint : public Object {
-    GENERATED_BODY(WiFiAccessPoint, Object)
+    GENERATED_BODY(WiFiAccessPoint, Object, void)
 
 public:
     enum class EventType : uint8_t {

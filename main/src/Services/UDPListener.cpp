@@ -30,11 +30,11 @@ UDPListener::~UDPListener() noexcept {
     close(socket);
 }
 
-size_t UDPListener::read(std::vector<uint8_t>& buffer) const noexcept {
+int64_t UDPListener::read(std::vector<uint8_t>& buffer) const noexcept {
    return read(buffer.data(), buffer.size());
 }
 
-size_t UDPListener::read(uint8_t* buffer, size_t count) const noexcept {
+int64_t UDPListener::read(uint8_t* buffer, size_t count) const noexcept {
     if(socket == -1){
         CMF_LOG(UDPListener, Error, "Read, but socket not set-up");
         return -1;

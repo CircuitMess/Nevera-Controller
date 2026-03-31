@@ -7,9 +7,10 @@
 #include "Pins.hpp"
 #include <Drivers/Input/InputTouchGPIO.h>
 #include <Drivers/Output/OutputPWM.h>
+#include <Drivers/Input/InputGPIO.h>
 
 class HardwareConfiguration : public Singleton {
-    GENERATED_BODY(HardwareConfiguration, Singleton)
+    GENERATED_BODY(HardwareConfiguration, Singleton, void)
 
 public:
 	const std::vector<GPIOPinDef>& getGPIOInputs() const noexcept { return GPIOInputs; }

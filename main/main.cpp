@@ -1,9 +1,9 @@
+#include <iostream>
 #include <Core/EntryPoint.h>
 #include <FileSystem/SPIFFS.h>
 #include "Periphery/GPIOPeriph.h"
 #include <Drivers/Interface/InputDriver.h>
 #include <Drivers/Input/InputGPIO.h>
-#include <Periphery/I2C.h>
 #include <Devices/AW9523.h>
 #include <Drivers/Output/OutputCurrAW.h>
 #include <Services/ButtonInput.h>
@@ -27,19 +27,21 @@
 #include "Enums.h"
 #include "Drivers/Input/InputTouchGPIO.h"
 #include <Drivers/Output/OutputPWM.h>
+#include <Periphery/I2CMaster.h>
+#include <Services/Feed.h>
 #include "Services/BatteryIndicator.h"
 #include "Services/ShutdownService.h"
+#include "Util/EfuseMeta.h"
+#include "JigHWTest/JigHWTest.h"
 
 class NeveraController : public Application {
-	GENERATED_BODY(NeveraController, Application)
+	GENERATED_BODY(NeveraController, Application, void)
 
 public:
 	NeveraController() noexcept : Super(1000, 6 * 1024, 8, 1) {}
 
 protected:
 	virtual void begin() noexcept override {
-		Super::begin();
-
 		auto ret = nvs_flash_init();
 		if(ret == ESP_ERR_NVS_NO_FREE_PAGES || ret == ESP_ERR_NVS_NEW_VERSION_FOUND){
 			ESP_ERROR_CHECK(nvs_flash_erase());
@@ -48,6 +50,22 @@ protected:
 		ESP_ERROR_CHECK(ret);
 
 		HardwareConfiguration* config = registerSingleton<HardwareConfiguration>();
+
+		if(JigHWTest::checkJig()){
+			printf("Jig\n");
+			StrongObjectPtr<JigHWTest> test = newObject<JigHWTest>();
+			test->start();
+			vTaskDelete(nullptr);
+		}else{
+			printf("Hello\n");
+		}
+
+		if(!EfuseMeta::check()){
+			while(true){
+				vTaskDelay(1000);
+				EfuseMeta::log();
+			}
+		}
 
 		GPIOPeriph* gpio = registerPeriphery<GPIOPeriph>();
 		InputGPIO* inputGPIO = registerDriver<InputGPIO>(config->getGPIOInputs(), gpio);
@@ -73,9 +91,9 @@ protected:
 		ButtonInput* buttonInput = registerService<ButtonInput>();
 		buttonInput->reg(ButtonInputs);
 
-		I2C* i2c = registerPeriphery<I2C>(I2CPort::Zero, static_cast<gpio_num_t>(I2C_SDA), static_cast<gpio_num_t>(I2C_SCL));
+		I2CMaster*  i2cMaster = registerPeriphery<I2CMaster>(I2CPort::Zero, static_cast<gpio_num_t>(I2C_SDA), static_cast<gpio_num_t>(I2C_SCL));
 
-		AW9523* aw9523 = registerDevice<AW9523>(i2c, config->getAW9523Address());
+		AW9523* aw9523 = registerDevice<AW9523>(i2cMaster, config->getAW9523Address());
 		aw9523->setCurrentLimit(AW9523::IMAX);
 
 		OutputCurrAW* outputCurrAW = registerService<OutputCurrAW>(config->getAW9523Outputs(), aw9523);
@@ -131,16 +149,10 @@ protected:
 
 		registerService<ShutdownService>();
 
-		StateMachine* stateMachine = registerService<StateMachine>(10, 8 * 1024, 6, 0);
+		registerService<Feed>();
+
+		StateMachine* stateMachine = registerService<StateMachine>(26, 8 * 1024, 6, 0);
 		stateMachine->setStartingStateType(IntroScreen::staticClass());
-	}
-
-	virtual void tick(float deltaTime) noexcept override {
-		Super::tick(deltaTime);
-	}
-
-	virtual void onDestroy() noexcept override {
-		Super::onDestroy();
 	}
 
 private:

@@ -6,7 +6,7 @@
 #include <Event/EventBroadcaster.h>
 
 class Comm : public AsyncEntity {
-    GENERATED_BODY(Comm, AsyncEntity)
+    GENERATED_BODY(Comm, AsyncEntity, void)
 
 public:
     DECLARE_EVENT(BatteryReceivedEvent, Comm, float);

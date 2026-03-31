@@ -16,9 +16,9 @@ Feed::Feed() : dataAvailable(0){
 		frameImg.resize(128 * 128);
 	}
 
-	readTask = newObject<Threaded>(this, [this](){ readLoop(); }, "FeedRead", 10, 4096, 6, 1);
+	readTask = newObject<Threaded>(this, [this](){ readLoop(); }, "FeedRead", 40, 4096, 8, 0);
 
-	decodeTask = newObject<Threaded>(this, [this](){ decodeLoop(); }, "FeedDecode", 10, 4096, 6, 0);
+	decodeTask = newObject<Threaded>(this, [this](){ decodeLoop(); }, "FeedDecode", 50, 4096, 8, 0);
 }
 
 Feed::~Feed(){
@@ -50,6 +50,10 @@ bool Feed::nextFrame(std::function<void(const Color* img)> cb){
 }
 
 void Feed::readLoop(){
+	if(!working){
+		return;
+	}
+
 	Application* app = getApp();
 	if(app == nullptr) {
 		return;
@@ -60,7 +64,7 @@ void Feed::readLoop(){
 		return;
 	}
 
-	const size_t bytes = udp->read(readBuf.data(), readBuf.size());
+	const int64_t bytes = udp->read(readBuf.data(), readBuf.size());
 
 	if(bytes <= 0){
 		return;
@@ -72,10 +76,16 @@ void Feed::readLoop(){
 }
 
 void Feed::decodeLoop(){
+	if(!working){
+		return;
+	}
+
 	dataAvailable.acquire();
 
 	std::unique_lock lock(rxMut);
-	if(!findFrame()) return;
+	if(!findFrame()) {
+		return;
+	}
 
 	rxBuf->skip(sizeof(FeedFrame::Header));
 	size_t size;
@@ -103,7 +113,10 @@ void Feed::decodeLoop(){
 			break;
 		}
 	}
-	if(freeImg == -1) return;
+
+	if(freeImg == -1) {
+		return;
+	}
 
 	freeImgs[freeImg] = false;
 	auto imgBuf = frameImgs[freeImg].data();

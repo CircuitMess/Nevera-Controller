@@ -11,7 +11,7 @@ enum class ShutdownReason : uint8_t {
 };
 
 class ShutdownService : public AsyncEntity {
-	GENERATED_BODY(ShutdownService, AsyncEntity)
+	GENERATED_BODY(ShutdownService, AsyncEntity, void)
 public:
 	ShutdownService();
 

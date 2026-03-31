@@ -6,7 +6,7 @@
 #include "WiFiAccessPoint.h"
 
 class TCPServer : public Object {
-    GENERATED_BODY(TCPServer, Object)
+    GENERATED_BODY(TCPServer, Object, void)
 
 public:
     DECLARE_EVENT(ConnectedEvent, TCPServer);

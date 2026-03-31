@@ -1,4 +1,5 @@
 #include "Bar.h"
+#include <Util/stdafx.h>
 
 Bar::Bar(){
 	car = std::make_unique<ImageElement>("/spiffs/Drive/Car.raw", 12, 4);

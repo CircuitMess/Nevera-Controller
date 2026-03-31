@@ -1,4 +1,5 @@
 #include "Speed.h"
+#include <Util/stdafx.h>
 
 Speed::Speed(){
 	overlay = std::make_unique<ImageElement>("/spiffs/Drive/SpeedBar.raw", 10, 112);

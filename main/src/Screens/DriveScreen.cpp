@@ -18,12 +18,17 @@ DriveScreen::DriveScreen(){
 	spd->setPos(116, 13);
 	addElement(spd);
 
-	feed = newObject<Feed>();
-
 	Application* app = getApp();
-	if(app == nullptr) {
+	if(app == nullptr){
 		return;
 	}
+
+	Feed* feed = app->getService<Feed>();
+	if(feed == nullptr){
+		return;
+	}
+
+	feed->setWorking(true);
 
 	ButtonInput* input = app->getService<ButtonInput>();
 	if(input == nullptr) {
@@ -56,6 +61,22 @@ DriveScreen::DriveScreen(){
 	comm->OnConnectionReceived.bind(this, &DriveScreen::onCarConnectionReceived);
 }
 
+void DriveScreen::onTransitionTo(const Class* next) noexcept {
+	Super::onTransitionTo(next);
+
+	Application* app = getApp();
+	if(app == nullptr){
+		return;
+	}
+
+	Feed* feed = app->getService<Feed>();
+	if(feed == nullptr){
+		return;
+	}
+
+	feed->setWorking(false);
+}
+
 void DriveScreen::onButton(Enum<int> btn, ButtonInput::Action action) noexcept{
 	if(btn == Button::Left || btn == Button::Right){
 		const float newDir = getDirection();
@@ -65,7 +86,7 @@ void DriveScreen::onButton(Enum<int> btn, ButtonInput::Action action) noexcept{
 		dir = newDir;
 		comm->sendDriveDir(dir);
 	}else if(btn == Button::Slider0 || btn == Button::Slider1 || btn == Button::Slider2 || btn == Button::Slider3 || btn == Button::Slider4
-			 || btn == Button::Backward || btn == Button::Forward){
+			 || btn == Button::Backward || btn == Button::Forward || btn == Button::Up || btn == Button::Down){
 		const auto newBoost = getBoost();
 		if(newBoost == boost) return;
 
@@ -88,23 +109,23 @@ void DriveScreen::onButton(Enum<int> btn, ButtonInput::Action action) noexcept{
 	leds->off(LEDs::Slider3);
 	leds->off(LEDs::Slider4);
 
-	if(std::abs(boost) >= 0.25f){
+	if(std::abs(boost) >= 1.0f){
 		leds->on(LEDs::Slider2, MaxBrightness);
 	}
 
-	if(boost >= 0.75f){
+	if(boost >= 1.5f){
 		leds->on(LEDs::Slider1, MaxBrightness);
 	}
 
-	if(boost >= 1.25f){
+	if(boost >= 2.0f){
 		leds->on(LEDs::Slider0, MaxBrightness);
 	}
 
-	if(boost <= -0.75){
+	if(boost <= -1.5){
 		leds->on(LEDs::Slider3, MaxBrightness);
 	}
 
-	if(boost <= -1.25){
+	if(boost <= -2.0){
 		leds->on(LEDs::Slider4, MaxBrightness);
 	}
 
@@ -124,6 +145,16 @@ void DriveScreen::onDisconnect() noexcept {
 }
 
 void DriveScreen::preRender(Sprite* canvas){
+	Application* app = getApp();
+	if(app == nullptr){
+		return;
+	}
+
+	Feed* feed = app->getService<Feed>();
+	if(feed == nullptr){
+		return;
+	}
+
 	feed->nextFrame([this](const Color* frame){
 		if(frame == nullptr){
 			return;
@@ -194,9 +225,9 @@ float DriveScreen::getBoost(){
 
 	if(val != 0) return val;
 
-	static constexpr Button ForwardPads[] = { Button::Slider0, Button::Slider1, Button::Slider2 };
-	static constexpr Button BackwardPads[] = { Button::Slider4, Button::Slider3, Button::Slider2 };
-	static constexpr int8_t weightMap[] = { 2, 1, 0 };
+	static constexpr Button ForwardPads[] = { Button::Up, Button::Slider0, Button::Slider1, Button::Slider2 };
+	static constexpr Button BackwardPads[] = { Button::Down, Button::Slider4, Button::Slider3, Button::Slider2 };
+	static constexpr int8_t weightMap[] = { 2, 2, 1, 0 };
 	uint8_t counter = 0;
 	int8_t sum = 0;
 	float avg = 0;

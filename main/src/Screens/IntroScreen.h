@@ -4,7 +4,7 @@
 #include "UI/Screen.h"
 
 class IntroScreen : public Screen {
-	GENERATED_BODY(IntroScreen, Screen);
+	GENERATED_BODY(IntroScreen, Screen, void)
 
 public:
 	IntroScreen();

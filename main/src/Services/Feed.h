@@ -12,7 +12,7 @@
 // TODO we need a Feed for jpg and one for raw img data
 
 class Feed : public Object {
-	GENERATED_BODY(Feed, Object)
+	GENERATED_BODY(Feed, Object, void)
 
 	typedef uint16_t Color;
 public:
@@ -21,7 +21,12 @@ public:
 
 	bool nextFrame(std::function<void(const Color* img)>);
 
+	inline void setWorking(bool value) {
+		working = value;
+	}
+
 private:
+	bool working;
 	JPEGDEC jpeg{};
 
 	StrongObjectPtr<RingBuffer> rxBuf;
