@@ -218,18 +218,6 @@ void JigHWTest::log(const char* property, const std::string& value) const {
 }
 
 bool JigHWTest::AW9523Check(){
-	Application* app = getApp();
-	if(app == nullptr){
-		printf("TEST:fail:App is null\n");
-		return false;
-	}
-
-	config = app->getSingleton<HardwareConfiguration>();
-	if(config == nullptr){
-		printf("TEST:fail:HW config is null\n");
-		return false;
-	}
-
 	if(i2cMaster->probe(config->getAW9523Address(), 200) != ESP_OK){
 		return false;
 	}
