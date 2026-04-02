@@ -103,12 +103,6 @@ protected:
 
 		OutputPWM* outputPWM = registerDriver<OutputPWM>(config->getPwmOutputs());
 
-		Display* display = registerDevice<Display>(config->getDisplayBusConfig(), config->getDisplayPanelConfig(), [](Sprite& canvas){
-							canvas.setColorDepth(lgfx::rgb565_2Byte);
-							canvas.createSprite(128, 128);
-						});
-		display->getLGFX().setSwapBytes(true);
-
 
 		static const std::vector<std::pair<LEDs, OutputPin>> ledPins = {
 				{ LEDs::Slider0,     { outputCurrAW, LED_SLIDER0 }},
@@ -126,7 +120,6 @@ protected:
 		LED<LEDs, RGB_LEDs>* ledService = registerService<LED<LEDs, RGB_LEDs>>();
 		ledService->reg(ledPins);
 
-		ledService->on(LEDs::Backlight, 1.0f);
 		ledService->on(LEDs::Power, 0.03f);
 
 		registerPeriphery<WiFi>();
@@ -135,19 +128,27 @@ protected:
 		registerService<UDPListener>();
 		registerService<Comm>();
 
-		Battery* battery = registerService<Battery>(OutputPin{ outputGPIO, PIN_VREF });
+		registerService<ShutdownService>();
 
+		Battery* battery = registerService<Battery>(OutputPin{ outputGPIO, PIN_VREF });
+		battery->OnLevelChanged.bind(this, &NeveraController::onBatteryChange);
 		battery->begin();
 
-		battery->OnLevelChanged.bind(this, &NeveraController::onBatteryChange);
+		onBatteryChange(battery->getLevel());
 
 		if(!SPIFFS::init()) {
 			return;
 		}
 
-		registerService<BatteryIndicator>(battery, ledService);
+		ledService->on(LEDs::Backlight, 1.0f);
 
-		registerService<ShutdownService>();
+		Display* display = registerDevice<Display>(config->getDisplayBusConfig(), config->getDisplayPanelConfig(), [](Sprite& canvas){
+							canvas.setColorDepth(lgfx::rgb565_2Byte);
+							canvas.createSprite(128, 128);
+						});
+		display->getLGFX().setSwapBytes(true);
+
+		registerService<BatteryIndicator>(battery, ledService);
 
 		registerService<Feed>();
 

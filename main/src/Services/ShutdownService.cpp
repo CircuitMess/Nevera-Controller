@@ -22,21 +22,16 @@ void ShutdownService::shutdown(ShutdownReason reason){
 
 	auto leds = app->getService<LED<LEDs, RGB_LEDs>>();
 
-	//Fade out - LEDFadeFunction couldn't be used since it provides periodic breathing effect
-	for(int8_t i = 100; i >= 0; i--){
-		leds->on(LEDs::Backlight, (float) i / 100.0f);
-		delayMillis(1);
-	}
-
 	for(int i = 0; i < (uint8_t) LEDs::COUNT; i++){
 		leds->off((LEDs) i);
 	}
 
-	if(GPIOPeriph* gpio = app->getPeriphery<GPIOPeriph>()) {
-		gpio->setMode(static_cast<gpio_num_t>(LED_BACKLIGHT), GPIOMode::Output);
-		gpio->write(static_cast<gpio_num_t>(LED_BACKLIGHT), true);
-		gpio_hold_en(static_cast<gpio_num_t>(LED_BACKLIGHT));
-	}
+	leds->forceUpdate();
+
+	gpio_reset_pin(static_cast<gpio_num_t>(LED_BACKLIGHT));
+	gpio_set_direction(static_cast<gpio_num_t>(LED_BACKLIGHT), GPIO_MODE_OUTPUT);
+	gpio_set_level(static_cast<gpio_num_t>(LED_BACKLIGHT), true);
+	gpio_hold_en(static_cast<gpio_num_t>(LED_BACKLIGHT));
 
 	gpio_deep_sleep_hold_en();
 

@@ -81,7 +81,6 @@ void Battery::sample(bool fresh){
 		hysteresis.update(readerBatt->sample());
 	}
 
-
 	if(oldLevel != getLevel() || fresh){
 		OnLevelChanged.broadcast(getLevel());
 	}

@@ -109,23 +109,27 @@ void DriveScreen::onButton(Enum<int> btn, ButtonInput::Action action) noexcept{
 	leds->off(LEDs::Slider3);
 	leds->off(LEDs::Slider4);
 
-	if(std::abs(boost) >= 1.0f){
+	if(boost >= 2.5f){
 		leds->on(LEDs::Slider2, MaxBrightness);
 	}
 
-	if(boost >= 1.5f){
+	if(boost >= 2.65f){
 		leds->on(LEDs::Slider1, MaxBrightness);
 	}
 
-	if(boost >= 2.0f){
+	if(boost >= 2.8f){
 		leds->on(LEDs::Slider0, MaxBrightness);
 	}
 
-	if(boost <= -1.5){
+	if(boost <= -2.5f){
+		leds->on(LEDs::Slider2, MaxBrightness);
+	}
+
+	if(boost <= -2.65f){
 		leds->on(LEDs::Slider3, MaxBrightness);
 	}
 
-	if(boost <= -2.0){
+	if(boost <= -2.8f){
 		leds->on(LEDs::Slider4, MaxBrightness);
 	}
 
@@ -227,14 +231,16 @@ float DriveScreen::getBoost(){
 
 	static constexpr Button ForwardPads[] = { Button::Up, Button::Slider0, Button::Slider1, Button::Slider2 };
 	static constexpr Button BackwardPads[] = { Button::Down, Button::Slider4, Button::Slider3, Button::Slider2 };
-	static constexpr int8_t weightMap[] = { 2, 2, 1, 0 };
+	static constexpr float weightMapForward[] = { 2.8f, 2.8f, 2.5f, 2.2f };
+	static constexpr float weightMapBackward[] = { 2.8f, 2.8f, 2.5f, 2.2f };
+
 	uint8_t counter = 0;
-	int8_t sum = 0;
-	float avg = 0;
+	float sum = 0.0f;
+	float avg = 0.0f;
 
 	for(uint8_t i = 0; i < 3; i++){
 		if(input->getState(ForwardPads[i])){
-			sum += weightMap[i];
+			sum += weightMapForward[i];
 			counter++;
 		}
 	}
@@ -244,10 +250,11 @@ float DriveScreen::getBoost(){
 	}
 
 	counter = 0;
-	sum = 0;
+	sum = 0.0f;
+
 	for(uint8_t i = 0; i < 3; i++){
 		if(input->getState(BackwardPads[i])){
-			sum += weightMap[i];
+			sum += weightMapBackward[i];
 			counter++;
 		}
 	}
