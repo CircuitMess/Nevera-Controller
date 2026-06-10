@@ -24,7 +24,7 @@ public:
 private:
 	void tick(float deltaTime) noexcept override;
 
-	static constexpr uint32_t Timeout = 2 * 60000; //2 mins
+	static constexpr uint32_t Timeout = 10 * 60000; //10 mins
 
 	SemaphoreHandle_t inactivitySem;
 
